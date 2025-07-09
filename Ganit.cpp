@@ -240,24 +240,6 @@ storage<T> s_cos(storage<T> &a,size_t terms) {
     return return_variable;
 }
 
-// Element-wise secant
-template <typename T>
-storage<T> s_sec(storage<T> &a,size_t terms) {
-    storage<T> ones (a.shape,1.0f);
-    storage<T> c = s_cos(a,terms);
-    storage<T> result = ones/c;
-    return result;
-}
-
-// Element-wise cosecant
-template <typename T>
-storage<T> s_csc(storage<T> &a,size_t terms) {
-    storage<T> ones (a.shape,1.0f);
-    storage<T> s = s_sin(a,terms);
-    storage<T> result = ones/s;
-    return result;
-}
-
 // Base class for autodiff nodes
 class Node {
 public:
@@ -507,14 +489,14 @@ Tensor cos(Tensor &a){
 }
 
 Tensor sec(Tensor &a){
-    Tensor c(a.data.shape, 0);
-    c.data = s_sec(a.data,10);
+    Tensor b(a.data.shape, 1);
+    Tensor c = division(b,cos(a));
     return c;
 }
 
 Tensor csc(Tensor &a){
-    Tensor c(a.data.shape, 0);
-    c.data = s_csc(a.data,10);
+    Tensor b(a.data.shape, 1);
+    Tensor c = division(b,sin(a));
     return c;
 }
 
