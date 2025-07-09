@@ -240,15 +240,6 @@ storage<T> s_cos(storage<T> &a,size_t terms) {
     return return_variable;
 }
 
-// Element-wise tangent using sine/cosine
-template <typename T>
-storage<T> s_tan(storage<T> &a,size_t terms) {
-    storage<T> s = s_sin(a,terms);
-    storage<T> c = s_cos(a,terms);
-    storage<T> result = s/c;
-    return result;
-}
-
 // Element-wise secant
 template <typename T>
 storage<T> s_sec(storage<T> &a,size_t terms) {
@@ -264,15 +255,6 @@ storage<T> s_csc(storage<T> &a,size_t terms) {
     storage<T> ones (a.shape,1.0f);
     storage<T> s = s_sin(a,terms);
     storage<T> result = ones/s;
-    return result;
-}
-
-// Element-wise cotangent
-template <typename T>
-storage<T> s_cot(storage<T> &a,size_t terms) {
-    storage<T> ones (a.shape,1.0f);
-    storage<T> t = s_tan(a,terms);
-    storage<T> result = ones/t;
     return result;
 }
 
