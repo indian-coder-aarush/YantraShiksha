@@ -428,11 +428,43 @@ class DivNode : public Node {
     }
 };
 
+class SinNode : public Node {
+    public:
+    std::shared_ptr<Node> a;
+    void apply(storage<float> &grad) override {
+        if(gradient.data==nullptr){
+            gradient = grad;
+        }
+        else{
+            gradient = grad+gradient;
+        }
+        storage<float> grad_a = s_cos(a->tensor->data,10) * grad;
+        a->apply(grad_a);
+    }
+};
+
+class CosNode : public Node {
+    public:
+    std::shared_ptr<Node> a;
+    void apply(storage<float> &grad) override {
+        if(gradient.data==nullptr){
+            gradient = grad;
+        }
+        else{
+            gradient = grad+gradient;
+        }
+        storage<float> minus_ones(grad.shape, -1);
+        storage<float> grad_a = s_sin(a->tensor->data,10) * grad * minus_ones;
+        a->apply(grad_a);
+    }
+};
+
 // Overloaded tensor operations with autodiff
 Tensor add(Tensor &a, Tensor &b){
     Tensor c(a.data.shape, 0);
     c.data = a.data+b.data;
     std::shared_ptr<AddNode> c_Node = std::make_shared<AddNode>();
+    c_Node->tensor  = std::make_shared<Tensor>(c);
     c_Node->b = b.Tensor_Node;
     c_Node->a = a.Tensor_Node;
     c.Tensor_Node = c_Node;
@@ -443,6 +475,7 @@ Tensor sub(Tensor &a, Tensor &b){
     Tensor c(a.data.shape, 0);
     c.data = a.data-b.data;
     std::shared_ptr<SubNode> c_Node  = std::make_shared<SubNode>();
+    c_Node->tensor  = std::make_shared<Tensor>(c);
     c_Node->b = b.Tensor_Node;
     c_Node->a = a.Tensor_Node;
     c.Tensor_Node = c_Node;
@@ -453,6 +486,7 @@ Tensor division(Tensor &a, Tensor &b){
     Tensor c(a.data.shape, 0);
     c.data = a.data/b.data;
     std::shared_ptr<DivNode> c_Node  = std::make_shared<DivNode>();
+    c_Node->tensor  = std::make_shared<Tensor>(c);
     c_Node->b = b.Tensor_Node;
     c_Node->a = a.Tensor_Node;
     c.Tensor_Node = c_Node;
@@ -463,6 +497,7 @@ Tensor mul(Tensor &a, Tensor &b){
     Tensor c(a.data.shape, 0);
     c.data = a.data*b.data;
     std::shared_ptr<MulNode> c_Node  = std::make_shared<MulNode>();
+    c_Node->tensor  = std::make_shared<Tensor>(c);
     c_Node->b = b.Tensor_Node;
     c_Node->a = a.Tensor_Node;
     c.Tensor_Node = c_Node;
@@ -472,12 +507,20 @@ Tensor mul(Tensor &a, Tensor &b){
 Tensor sin(Tensor &a){
     Tensor c(a.data.shape, 0);
     c.data = s_sin(a.data,10);
+    std::shared_ptr<SinNode> c_Node  = std::make_shared<SinNode>();
+    c_Node->tensor =  std::make_shared<Tensor>(c);
+    c_Node->a = a.Tensor_Node;
+    c.Tensor_Node = c_Node;
     return c;
 }
 
 Tensor cos(Tensor &a){
     Tensor c(a.data.shape, 0);
     c.data = s_cos(a.data,10);
+    std::shared_ptr<CosNode> c_Node  = std::make_shared<CosNode>();
+    c_Node->tensor =  std::make_shared<Tensor>(c);
+    c_Node->a = a.Tensor_Node;
+    c.Tensor_Node = c_Node;
     return c;
 }
 
