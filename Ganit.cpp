@@ -537,14 +537,12 @@ Tensor csc(Tensor &a){
 }
 
 Tensor tan(Tensor &a){
-    Tensor c(a.data.shape, 0);
-    c.data = s_tan(a.data,10);
+    Tensor c = division(sin(c),cos(c));
     return c;
 }
 
 Tensor cot(Tensor &a){
-    Tensor c(a.data.shape, 0);
-    c.data = s_cot(a.data,10);
+    Tensor c = division(cos(c),sin(c));
     return c;
 }
 
