@@ -386,7 +386,7 @@ class DivNode : public Node {
         }
         storage<float> minus_ones(grad.shape, -1);
         storage<float> grad_a = grad / b->tensor->data;
-        storage<float> grad_b =  (grad * minus_ones * b->tensor->data)/(a->tensor->data^2);
+        storage<float> grad_b =  (grad * minus_ones * a->tensor->data)/(b->tensor->data^2);
         a->apply(grad_a);
         b->apply(grad_b);
     }
@@ -496,17 +496,17 @@ Tensor sec(Tensor &a){
 
 Tensor csc(Tensor &a){
     Tensor b(a.data.shape, 1);
-    Tensor c = division(b,sin(a));
+    Tensor c = division(b,sin(a)).data;
     return c;
 }
 
 Tensor tan(Tensor &a){
-    Tensor c = division(sin(c),cos(c));
+    Tensor c = division(sin(a),cos(a));
     return c;
 }
 
 Tensor cot(Tensor &a){
-    Tensor c = division(cos(c),sin(c));
+    Tensor c = division(cos(a),sin(a));
     return c;
 }
 
