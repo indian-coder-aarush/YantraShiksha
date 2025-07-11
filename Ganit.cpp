@@ -274,7 +274,7 @@ private:
     void get_shape(py::list& list, std::vector<size_t> &shape){
         if(py::isinstance<py::list>(list[0])){
             shape.push_back(list.size());
-            get_shape(list[0]);
+            get_shape(list[0].cast<py::list>(),shape);
         }
         else{
             shape.push_back(list.size());
@@ -303,17 +303,20 @@ public:
     Tensor(std::vector<size_t> &dim,float default_value):data(dim,default_value),Tensor_Node(std::make_shared<Node>()){
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
-    Tensor(py::list& list){
+    Tensor(py::list& list):Tensor_Node(std::make_shared<Node>()){
         std::vector<size_t> shape;
         get_shape(list,shape);
         size_t size = 1;
-        for(i = 0; i<shape.size();i++){
+        data.shape = shape;
+        for(int i = 0; i<shape.size();i++){
             size*= shape[i];
         }
-        float* a = new float[data.size];
+        data.size = size;
+        float* a = new float[size];
         int index = 0;
-        flatten(list,a,index)
+        flatten(list,a,index);
         data.data = a;
+        Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
 
     // Assign values from nested Python list
