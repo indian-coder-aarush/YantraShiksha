@@ -271,6 +271,15 @@ private:
             }
         }
     }
+    void get_shape(py::list& list, std::vector<size_t> &shape){
+        if(py::isinstance<py::list>(list[0])){
+            shape.push_back(list.size());
+            get_shape(list[0]);
+        }
+        else{
+            shape.push_back(list.size());
+        }
+    }
 
 public:
     storage<float> data;
