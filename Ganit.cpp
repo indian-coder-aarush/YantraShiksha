@@ -541,7 +541,7 @@ Tensor matmul(Tensor &a, Tensor &b){
 // Bind everything with pybind11
 PYBIND11_MODULE(Ganit, m) {
     pybind11::class_<Tensor>(m, "Tanitra")
-        .def(pybind11::init<std::vector<size_t>, float>())
+        .def(pybind11::init<py::list&>())
         .def("__getitem__", &Tensor::access)
         .def("__setitem__", &Tensor::change_value)
         .def("print", &Tensor::print)
