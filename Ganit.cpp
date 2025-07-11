@@ -303,6 +303,18 @@ public:
     Tensor(std::vector<size_t> &dim,float default_value):data(dim,default_value),Tensor_Node(std::make_shared<Node>()){
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
+    Tensor(py::list& list){
+        std::vector<size_t> shape;
+        get_shape(list,shape);
+        size_t size = 1;
+        for(i = 0; i<shape.size();i++){
+            size*= shape[i];
+        }
+        float* a = new float[data.size];
+        int index = 0;
+        flatten(list,a,index)
+        data.data = a;
+    }
 
     // Assign values from nested Python list
     void assign (py::list &list) {
