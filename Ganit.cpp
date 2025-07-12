@@ -319,6 +319,10 @@ public:
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
 
+    void reshape(std::vector<size_t> &shape){
+        data.shape = shape;
+    }
+
     // Assign values from nested Python list
     void assign (py::list &list) {
         float *a = new float[data.size];
@@ -548,7 +552,7 @@ PYBIND11_MODULE(Ganit, m) {
         .def("__getitem__", &Tensor::access)
         .def("__setitem__", &Tensor::change_value)
         .def("print", &Tensor::print)
-        .def("assign",&Tensor::assign)
+        .def("reshape",&Tensor::reshape)
         .def("backward",py::overload_cast<>(&Tensor::backward))
         .def("grad",&Tensor::grad)
         .def("__add__",&add)
