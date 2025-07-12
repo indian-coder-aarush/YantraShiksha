@@ -10,7 +10,6 @@ namespace py = pybind11;
 class Tensor;
 
 // Template class for storing multi-dimensional array-like data
-template <typename T>
 class storage {
 private:
     // Recursive function to print data in multi-dimensional format
@@ -27,15 +26,26 @@ private:
         std::cout <<']';
     }
 
+    void set_stride(const std::vector<size_t> &shape){
+    stride.resize(shape.size());
+    size_t prod = 1;
+    for (int i = shape.size() - 1; i >= 0; --i) {
+        stride[i] = prod;
+        prod *= shape[i];
+    }
+}
+
 public:
     std::vector<size_t> shape; // Shape of the tensor
-    T *data;                   // Pointer to data
+    double *data;                   // Pointer to data
     size_t size;              // Total size
+    std::vector<size_t> stride;
 
     // Copy constructor
     storage(const storage& other)
-      : shape(other.shape), size(other.size), data(new T[other.size]) {
+      : shape(other.shape), size(other.size), data(new double[other.size]) {
         std::copy(other.data, other.data + size, data);
+        set_stride(shape);
     }
 
     // Default constructor
@@ -49,21 +59,23 @@ public:
             }
             shape = other.shape;
             size  = other.size;
-            data  = new T[size];
+            data  = new double[size];
             std::copy(other.data, other.data + size, data);
+            set_stride(shape);
         }
         return *this;
     }
 
     // Constructor with shape and default value
-    storage(const std::vector<size_t> &dim,T default_value) : shape(dim), data(nullptr), size(1) {
+    storage(const std::vector<size_t> &dim,double default_value) : shape(dim), data(nullptr), size(1) {
         for (const size_t &i:dim) {
             size *= i;
         }
-        data = new T[size];
+        data = new double[size];
         for (size_t i = 0; i < size; i++) {
             data[i] = default_value;
         }
+        set_stride(shape);
     }
 
     // Destructor
@@ -79,31 +91,21 @@ public:
     }
 
     // Access data at given indices
-    T access(const std::vector<size_t> &indices) {
-        size_t indice = 0;
-        size_t iterator = 1;
+    double access(const std::vector<size_t> &indices) {
+        size_t index = 0;
         for (size_t i = 0; i < indices.size(); i++) {
-            for (size_t j = i+1; j < indices.size() ; j++) {
-                iterator *= shape[j];
-            }
-            indice += iterator*indices[i];
-            iterator = 1;
+            index += stride[i]*indices[i];
         }
-        return data[indice];
+        return data[index];
     }
 
     // Change value at given indices
-    void change_value(const std::vector<size_t> &indices, T &value) {
-        size_t indice = 0;
-        size_t iterator = 1;
+    void change_value(const std::vector<size_t> &indices, double &value) {
+        size_t index = 0;
         for (size_t i = 0; i < indices.size(); i++) {
-            for (size_t j = i+1; j < indices.size() ; j++) {
-                iterator *= shape[j];
-            }
-            indice += iterator*indices[i];
-            iterator = 1;
+            index += stride[i]*indices[i];
         }
-        data[indice] = value;
+        data[index] = value;
     }
 
     // Pretty print the data
@@ -114,9 +116,8 @@ public:
 };
 
 // Element-wise addition
-template <typename T>
-storage<T> operator +(storage<T> &a,storage<T> &b) {
-    storage<T> result(a.dimensions(), 0);
+storage operator +(storage &a,storage &b) {
+    storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
         result.data[i] =  a.data[i] + b.data[i];
     }
@@ -124,9 +125,8 @@ storage<T> operator +(storage<T> &a,storage<T> &b) {
 }
 
 // Element-wise subtraction
-template <typename T>
-storage<T> operator -(storage<T> &a,storage<T> &b) {
-    storage<T> result(a.dimensions(), 0);
+storage operator -(storage &a,storage &b) {
+    storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
         result.data[i] =  a.data[i] - b.data[i];
     }
@@ -134,9 +134,8 @@ storage<T> operator -(storage<T> &a,storage<T> &b) {
 }
 
 // Element-wise multiplication
-template <typename T>
-storage<T> operator *(storage<T> &a,storage<T> &b) {
-    storage<T> result(a.dimensions(), 0);
+storage operator *(storage &a,storage &b) {
+    storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
         result.data[i] =  a.data[i] * b.data[i];
     }
@@ -144,9 +143,8 @@ storage<T> operator *(storage<T> &a,storage<T> &b) {
 }
 
 // Element-wise division
-template <typename T>
-storage<T> operator /(storage<T> &a,storage<T> &b) {
-    storage<T> result(a.dimensions(), 0);
+storage operator /(storage &a,storage &b) {
+    storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
         result.data[i] =  a.data[i] / b.data[i];
     }
@@ -154,9 +152,8 @@ storage<T> operator /(storage<T> &a,storage<T> &b) {
 }
 
 // Raise each element to a power
-template <typename T>
-storage<T> operator ^(storage<T> &a, float power) {
-    storage<T> result(a.dimensions(), 0);
+storage operator ^(storage &a, double power) {
+    storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
         result.data[i] = pow(a.data[i],power);
     }
@@ -164,9 +161,8 @@ storage<T> operator ^(storage<T> &a, float power) {
 }
 
 // Element-wise square root
-template <typename T>
-storage<T> sqrt(storage<T> &a) {
-    storage<T> result(a.dimensions(), 0);
+storage sqrt(storage &a) {
+    storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
         result.data[i] = pow(a.data[i],0.5);
     }
@@ -174,10 +170,9 @@ storage<T> sqrt(storage<T> &a) {
 }
 
 // Matrix multiplication
-template <typename T>
-storage<T> matmul(storage<T> &a , storage<T> &b){
-    storage<T> result(a.dimensions(), 0);
-    T result_i_j = 0;
+storage matmul(storage &a , storage &b){
+    storage result(a.dimensions(), 0);
+    double result_i_j = 0;
     for (size_t i = 0; i < a.shape[0]; i++) {
         for (size_t j = 0; j < b.shape[1]; j++) {
             for (size_t k = 0; k < b.shape[0]; k++) {
@@ -191,9 +186,8 @@ storage<T> matmul(storage<T> &a , storage<T> &b){
 }
 
 // Dot product (1D tensors)
-template <typename T>
-T dot(storage<T> &a , storage<T> &b) {
-    T result = 0;
+double dot(storage &a , storage &b) {
+    double result = 0;
     for (size_t i = 0; i < a.shape[0]; i++) {
         result += a.data[i] * b.data[i];
     }
@@ -201,10 +195,9 @@ T dot(storage<T> &a , storage<T> &b) {
 }
 
 // Element-wise sine using Taylor series
-template <typename T>
-storage<T> s_sin(storage<T> &a,size_t terms) {
-    storage<T> return_variable = a;
-    T result = 0;
+storage s_sin(storage &a,size_t terms) {
+    storage return_variable = a;
+    double result = 0;
     double fact = 1;
     for (size_t i = 0; i < a.size; i++) {
         for (int j = 0; j < terms ; j++) {
@@ -221,10 +214,9 @@ storage<T> s_sin(storage<T> &a,size_t terms) {
 }
 
 // Element-wise cosine using Taylor series
-template <typename T>
-storage<T> s_cos(storage<T> &a,size_t terms) {
-    storage<T> return_variable = a;
-    T result = 0;
+storage s_cos(storage &a,size_t terms) {
+    storage return_variable = a;
+    double result = 0;
     float fact = 1;
     for (size_t i = 0; i < a.size; i++) {
         for (int j = 0; j < terms ; j++) {
@@ -245,14 +237,14 @@ class Node {
 public:
     Node(){}
     std::shared_ptr<Tensor> tensor;
-    storage<float> gradient;
-    void accumulate_gradient(storage<float>& grad) {
+    storage gradient;
+    void accumulate_gradient(storage& grad) {
     if (gradient.data == nullptr)
         gradient = grad;
     else
         gradient = grad + gradient;
     }
-    virtual void apply(storage<float> &grad){
+    virtual void apply(storage &grad){
         if(gradient.data==nullptr){
             gradient = grad;
         }
@@ -266,13 +258,13 @@ public:
 class Tensor {
 private:
     // Helper to flatten nested Python list to flat array
-    void flatten(py::list &list, float *a,int &index){
+    void flatten(py::list &list, double *a,int &index){
         for(auto i: list){
             if(py::isinstance<py::list>(i)){
                 flatten(i.cast<py::list>(),a,index);
             }
             else{
-                a[index] = i.cast<float>();
+                a[index] = i.cast<double>();
                 index++;
             }
         }
@@ -288,12 +280,12 @@ private:
     }
 
 public:
-    storage<float> data;
+    storage data;
     std::shared_ptr<Node> Tensor_Node;
 
     // Backpropagation entry point
     void backward(){
-        storage<float> grad(data.shape,1);
+        storage grad(data.shape,1);
         Tensor_Node->apply(grad);
     }
 
@@ -303,10 +295,10 @@ public:
     }
 
     // Constructors
-    Tensor(storage<float> &other):data(other),Tensor_Node(std::make_shared<Node>()){
+    Tensor(storage &other):data(other),Tensor_Node(std::make_shared<Node>()){
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
-    Tensor(std::vector<size_t> &dim,float default_value):data(dim,default_value),Tensor_Node(std::make_shared<Node>()){
+    Tensor(std::vector<size_t> &dim,double default_value):data(dim,default_value),Tensor_Node(std::make_shared<Node>()){
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
     Tensor(py::list& list):Tensor_Node(std::make_shared<Node>()){
@@ -318,7 +310,7 @@ public:
             size*= shape[i];
         }
         data.size = size;
-        float* a = new float[size];
+        double* a = new double[size];
         int index = 0;
         flatten(list,a,index);
         data.data = a;
@@ -326,9 +318,9 @@ public:
     }
 
     // Access and modify elements
-    float access(std::vector<size_t> &idx) {
+    double access(std::vector<size_t> &idx) {
         return data.access(idx);}
-    void change_value(py::list &idx, float value) {
+    void change_value(py::list &idx, double value) {
         std::vector<size_t> index;
         for (const auto &i:idx) {
             index.push_back(i.cast<size_t>());
@@ -346,7 +338,7 @@ public:
 class AddNode: public Node {
 public:
     std::shared_ptr<Node> a,b;
-    void apply(storage<float> &grad) override {
+    void apply(storage &grad) override {
         accumulate_gradient(grad);
         a->apply(grad);
         b->apply(grad);
@@ -357,11 +349,11 @@ public:
 class SubNode: public Node {
 public:
     std::shared_ptr<Node> a,b;
-    void apply(storage<float> &grad) override {
+    void apply(storage &grad) override {
         accumulate_gradient(grad);
         a->apply(grad);
-        storage<float> minus_ones(grad.shape,-1);
-        storage<float> grad_b = grad * minus_ones;
+        storage minus_ones(grad.shape,-1);
+        storage grad_b = grad * minus_ones;
         b->apply(grad_b);
     }
 };
@@ -369,10 +361,10 @@ public:
 class MulNode: public Node {
     public:
     std::shared_ptr<Node> a,b;
-    void apply(storage<float> &grad) override {
+    void apply(storage &grad) override {
         accumulate_gradient(grad);
-        storage<float> grad_a = b->tensor->data * grad;
-        storage<float> grad_b = a->tensor->data * grad;
+        storage grad_a = b->tensor->data * grad;
+        storage grad_b = a->tensor->data * grad;
         a->apply(grad_a);
         b->apply(grad_b);
     }
@@ -381,11 +373,11 @@ class MulNode: public Node {
 class DivNode : public Node {
     public:
     std::shared_ptr<Node> a,b;
-    void apply(storage<float> &grad) override {
+    void apply(storage &grad) override {
         accumulate_gradient(grad);
-        storage<float> minus_ones(grad.shape, -1);
-        storage<float> grad_a = grad / b->tensor->data;
-        storage<float> grad_b =  (grad * minus_ones * a->tensor->data)/(b->tensor->data^2);
+        storage minus_ones(grad.shape, -1);
+        storage grad_a = grad / b->tensor->data;
+        storage grad_b =  (grad * minus_ones * a->tensor->data)/(b->tensor->data^2);
         a->apply(grad_a);
         b->apply(grad_b);
     }
@@ -394,9 +386,9 @@ class DivNode : public Node {
 class SinNode : public Node {
     public:
     std::shared_ptr<Node> a;
-    void apply(storage<float> &grad) override {
+    void apply(storage &grad) override {
         accumulate_gradient(grad);
-        storage<float> grad_a = s_cos(a->tensor->data,10) * grad;
+        storage grad_a = s_cos(a->tensor->data,10) * grad;
         a->apply(grad_a);
     }
 };
@@ -404,10 +396,10 @@ class SinNode : public Node {
 class CosNode : public Node {
     public:
     std::shared_ptr<Node> a;
-    void apply(storage<float> &grad) override {
+    void apply(storage &grad) override {
         accumulate_gradient(grad);
-        storage<float> minus_ones(grad.shape, -1);
-        storage<float> grad_a = s_sin(a->tensor->data,10) * grad * minus_ones;
+        storage minus_ones(grad.shape, -1);
+        storage grad_a = s_sin(a->tensor->data,10) * grad * minus_ones;
         a->apply(grad_a);
     }
 };
@@ -416,7 +408,7 @@ class ReshapeNode : public Node{
     public:
     std::shared_ptr<Node> a;
     std::vector<size_t> initial_shape;
-    void apply(storage<float> &grad){
+    void apply(storage &grad){
         accumulate_gradient(grad);
         grad.shape = initial_shape;
         a->apply(grad);
@@ -511,7 +503,7 @@ Tensor cot(Tensor &a){
 }
 
 Tensor matmul(Tensor &a, Tensor &b){
-    storage<float> c = matmul(a.data, b.data);
+    storage c = matmul(a.data, b.data);
     Tensor d(c.shape, 0);
     d.data = c;
     return d;
@@ -549,6 +541,5 @@ PYBIND11_MODULE(Ganit, m) {
     .def("tan",&tan)
     .def("sec",&sec)
     .def("csc",&csc)
-    .def("cot", &cot)
-    .def("__matmul__",&matmul);
+    .def("cot", &cot);
 }
