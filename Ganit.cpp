@@ -419,9 +419,9 @@ class ReshapeNode : public Node{
     void apply(storage<float> &grad){
         accumulate_gradient(grad);
         grad.shape = initial_shape;
-        return grad;
+        a->apply(grad);
     }
-}
+};
 
 // Overloaded tensor operations with autodiff
 Tensor add(Tensor &a, Tensor &b){
@@ -520,9 +520,9 @@ Tensor matmul(Tensor &a, Tensor &b){
 Tensor reshape(Tensor &a , std::vector<size_t> &shape){
     Tensor b(a.data);
     std::shared_ptr<ReshapeNode> b_Node  = std::make_shared<ReshapeNode>();
-    b_Node->tensor =  std::make_shared<Tensor>(c);
+    b_Node->tensor =  std::make_shared<Tensor>(b);
     b_Node->a = a.Tensor_Node;
-    b_Node->initial_shape = data.shape;
+    b_Node->initial_shape = a.data.shape;
     b.data.shape = shape;
     b.Tensor_Node = b_Node;
     return b;
@@ -535,7 +535,7 @@ PYBIND11_MODULE(Ganit, m) {
         .def("__getitem__", &Tensor::access)
         .def("__setitem__", &Tensor::change_value)
         .def("print", &Tensor::print)
-        .def("reshape",&Tensor::reshape)
+        .def("reshape",&reshape)
         .def("backward",py::overload_cast<>(&Tensor::backward))
         .def("grad",&Tensor::grad)
         .def("__add__",&add)
