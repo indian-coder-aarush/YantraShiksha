@@ -246,6 +246,12 @@ public:
     Node(){}
     std::shared_ptr<Tensor> tensor;
     storage<float> gradient;
+    void accumulate_gradient(storage<float>& grad) {
+    if (gradient.data == nullptr)
+        gradient = grad;
+    else
+        gradient = grad + gradient;
+    }
     virtual void apply(storage<float> &grad){
         if(gradient.data==nullptr){
             gradient = grad;
@@ -319,21 +325,6 @@ public:
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
 
-    void reshape(std::vector<size_t> &shape){
-        data.shape = shape;
-    }
-
-    // Assign values from nested Python list
-    void assign (py::list &list) {
-        float *a = new float[data.size];
-        int index = 0;
-        flatten(list,a,index);
-        if(data.data != nullptr){
-            delete[] data.data;
-        }
-        data.data = a;
-    }
-
     // Access and modify elements
     float access(std::vector<size_t> &idx) {
         return data.access(idx);}
@@ -356,12 +347,7 @@ class AddNode: public Node {
 public:
     std::shared_ptr<Node> a,b;
     void apply(storage<float> &grad) override {
-        if(gradient.data==nullptr){
-            gradient = grad;
-        }
-        else{
-            gradient = grad+gradient;
-        }
+        accumulate_gradient(grad);
         a->apply(grad);
         b->apply(grad);
     }
@@ -372,12 +358,7 @@ class SubNode: public Node {
 public:
     std::shared_ptr<Node> a,b;
     void apply(storage<float> &grad) override {
-        if(gradient.data==nullptr){
-            gradient = grad;
-        }
-        else{
-            gradient = grad+gradient;
-        }
+        accumulate_gradient(grad);
         a->apply(grad);
         storage<float> minus_ones(grad.shape,-1);
         storage<float> grad_b = grad * minus_ones;
@@ -389,12 +370,7 @@ class MulNode: public Node {
     public:
     std::shared_ptr<Node> a,b;
     void apply(storage<float> &grad) override {
-        if(gradient.data==nullptr){
-            gradient = grad;
-        }
-        else{
-            gradient = grad+gradient;
-        }
+        accumulate_gradient(grad);
         storage<float> grad_a = b->tensor->data * grad;
         storage<float> grad_b = a->tensor->data * grad;
         a->apply(grad_a);
@@ -406,12 +382,7 @@ class DivNode : public Node {
     public:
     std::shared_ptr<Node> a,b;
     void apply(storage<float> &grad) override {
-        if(gradient.data==nullptr){
-            gradient = grad;
-        }
-        else{
-            gradient = grad+gradient;
-        }
+        accumulate_gradient(grad);
         storage<float> minus_ones(grad.shape, -1);
         storage<float> grad_a = grad / b->tensor->data;
         storage<float> grad_b =  (grad * minus_ones * a->tensor->data)/(b->tensor->data^2);
@@ -424,12 +395,7 @@ class SinNode : public Node {
     public:
     std::shared_ptr<Node> a;
     void apply(storage<float> &grad) override {
-        if(gradient.data==nullptr){
-            gradient = grad;
-        }
-        else{
-            gradient = grad+gradient;
-        }
+        accumulate_gradient(grad);
         storage<float> grad_a = s_cos(a->tensor->data,10) * grad;
         a->apply(grad_a);
     }
@@ -439,17 +405,23 @@ class CosNode : public Node {
     public:
     std::shared_ptr<Node> a;
     void apply(storage<float> &grad) override {
-        if(gradient.data==nullptr){
-            gradient = grad;
-        }
-        else{
-            gradient = grad+gradient;
-        }
+        accumulate_gradient(grad);
         storage<float> minus_ones(grad.shape, -1);
         storage<float> grad_a = s_sin(a->tensor->data,10) * grad * minus_ones;
         a->apply(grad_a);
     }
 };
+
+class ReshapeNode : public Node{
+    public:
+    std::shared_ptr<Node> a;
+    std::vector<size_t> initial_shape;
+    void apply(storage<float> &grad){
+        accumulate_gradient(grad);
+        grad.shape = initial_shape;
+        return grad;
+    }
+}
 
 // Overloaded tensor operations with autodiff
 Tensor add(Tensor &a, Tensor &b){
@@ -543,6 +515,17 @@ Tensor matmul(Tensor &a, Tensor &b){
     Tensor d(c.shape, 0);
     d.data = c;
     return d;
+}
+
+Tensor reshape(Tensor &a , std::vector<size_t> &shape){
+    Tensor b(a.data);
+    std::shared_ptr<ReshapeNode> b_Node  = std::make_shared<ReshapeNode>();
+    b_Node->tensor =  std::make_shared<Tensor>(c);
+    b_Node->a = a.Tensor_Node;
+    b_Node->initial_shape = data.shape;
+    b.data.shape = shape;
+    b.Tensor_Node = b_Node;
+    return b;
 }
 
 // Bind everything with pybind11
