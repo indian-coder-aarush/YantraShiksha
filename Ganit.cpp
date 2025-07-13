@@ -171,6 +171,14 @@ storage operator/(storage& a, storage& b) {
     return elementwise_op(a, b, [](double x, double y) { return x / y; });
 }
 
+storage T(storage& a){
+    size_t change_variable = a.shape[0];
+    a.shape[0] = a.shape[1];
+    a.shape[1] = change_variable;
+    size_t change_variable = a.stride[0];
+    a.stride[0] = a.stride[1];
+    a.stride[1] = change_variable;
+}
 
 // Raise each element to a power
 storage operator ^(storage &a, double power) {
