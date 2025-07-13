@@ -175,9 +175,22 @@ storage T(storage& a){
     size_t change_variable = a.shape[0];
     a.shape[0] = a.shape[1];
     a.shape[1] = change_variable;
-    size_t change_variable = a.stride[0];
+    change_variable = a.stride[0];
     a.stride[0] = a.stride[1];
     a.stride[1] = change_variable;
+    return a;
+}
+
+storage T(storage& a, std::vector<size_t>& order){
+    std::vector<size_t> new_shape(a.shape.size(),0);
+    std::vector<size_t> new_strides(a.stride.size(),0);
+    for(size_t i = 0; i<a.shape.size();i++){
+        new_strides[i] = a.stride[order[i]];
+        new_shape[i] = a.shape[order[i]];
+    }
+    a.shape = new_shape;
+    a.stride = new_strides;
+    return a;
 }
 
 // Raise each element to a power
