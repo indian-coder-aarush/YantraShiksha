@@ -212,7 +212,7 @@ storage sqrt(storage &a) {
 }
 
 // Matrix multiplication
-storage matmul(storage &a , storage &b){
+storage s_matmul(storage &a , storage &b){
     storage result(a.dimensions(), 0);
     double result_i_j = 0;
     for (size_t i = 0; i < a.shape[0]; i++) {
@@ -464,6 +464,18 @@ class ReshapeNode : public Node{
     }
 };
 
+class MatmulNode : public Node{
+    public:
+    std::shared_ptr<Node> a,b;
+    void apply(storage &grad){
+        accumulate_gradient(grad);
+        storage grad_a = s_matmul(grad,T(b->tensor->data));
+        storage grad_b = s_matmul(T(a->tensor->data),grad);
+        a->apply(grad_a);
+        b->apply(grad_b);
+    }
+};
+
 // Overloaded tensor operations with autodiff
 Tensor add(Tensor &a, Tensor &b){
     Tensor c(a.data.shape, 0);
@@ -552,10 +564,14 @@ Tensor cot(Tensor &a){
 }
 
 Tensor matmul(Tensor &a, Tensor &b){
-    storage c = matmul(a.data, b.data);
-    Tensor d(c.shape, 0);
-    d.data = c;
-    return d;
+    Tensor c(a.data.shape, 0);
+    c.data = s_matmul(a.data,b.data);
+    std::shared_ptr<MatmulNode> c_Node = std::make_shared<MatmulNode>();
+    c_Node->tensor  = std::make_shared<Tensor>(c);
+    c_Node->b = b.Tensor_Node;
+    c_Node->a = a.Tensor_Node;
+    c.Tensor_Node = c_Node;
+    return c;
 }
 
 Tensor reshape(Tensor &a , std::vector<size_t> &shape){
@@ -582,7 +598,8 @@ PYBIND11_MODULE(Ganit, m) {
         .def("__add__",&add)
         .def("__sub__", &sub)
         .def("__truediv__",&division)
-        .def("__mul__",&mul);
+        .def("__mul__",&mul)
+        .def("__matmul__",&matmul);
 
 
     m.def("sin",&sin)
