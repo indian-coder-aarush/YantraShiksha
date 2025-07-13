@@ -9,6 +9,25 @@
 namespace py = pybind11;
 class Tensor;
 
+size_t offset(std::vector<size_t>& stride,std::vector<size_t>& index){
+    size_t offset_index = 0;
+    for(int i = 0;i<stride.size();i++){
+        offset_index += stride[i]*index[i];
+    }
+    return offset_index;
+}
+
+bool increment(std::vector<size_t>& index,std::vector<size_t>& shape){
+    for(int i = index.size()-1;i>=0;--i){
+        if(index[i]+1<shape[i]){
+            index[i]++;
+            return true;
+        }
+        index[i] = 0;
+    }
+    return false;
+}
+
 // Template class for storing multi-dimensional array-like data
 class storage {
 private:
@@ -26,14 +45,6 @@ private:
         std::cout <<']';
     }
 
-    void set_stride(const std::vector<size_t> &shape){
-    stride.resize(shape.size());
-    size_t prod = 1;
-    for (int i = shape.size() - 1; i >= 0; --i) {
-        stride[i] = prod;
-        prod *= shape[i];
-    }
-}
 
 public:
     std::vector<size_t> shape; // Shape of the tensor
@@ -48,6 +59,15 @@ public:
         set_stride(shape);
     }
 
+    void set_stride(const std::vector<size_t> &shape){
+    stride.resize(shape.size());
+    size_t prod = 1;
+    for (int i = shape.size() - 1; i >= 0; --i) {
+        stride[i] = prod;
+        prod *= shape[i];
+    }
+}
+
     // Default constructor
     storage():data(nullptr), size(0){}
 
@@ -61,8 +81,8 @@ public:
             size  = other.size;
             data  = new double[size];
             std::copy(other.data, other.data + size, data);
-            set_stride(shape);
         }
+        set_stride(shape);
         return *this;
     }
 
@@ -116,40 +136,41 @@ public:
 };
 
 // Element-wise addition
-storage operator +(storage &a,storage &b) {
+template<typename Op>
+storage elementwise_op(storage &a,storage &b,Op op) {
     storage result(a.dimensions(), 0);
-    for (size_t i = 0; i < a.size; i++) {
-        result.data[i] =  a.data[i] + b.data[i];
-    }
+    std::vector<size_t> index(a.shape.size(),0);
+    size_t a_offset,b_offset,result_offset;
+    do{
+        a_offset = offset(a.stride,index);
+        b_offset = offset(b.stride,index);
+        result_offset = offset(result.stride,index);
+        result.data[result_offset] = op(a.data[a_offset],b.data[b_offset]);
+    }while(increment(index,a.shape));
     return result;
+}
+
+storage operator+(storage& a, storage& b) {
+    return elementwise_op(a, b, [](double x, double y) { return x + y; });
 }
 
 // Element-wise subtraction
-storage operator -(storage &a,storage &b) {
-    storage result(a.dimensions(), 0);
-    for (size_t i = 0; i < a.size; i++) {
-        result.data[i] =  a.data[i] - b.data[i];
-    }
-    return result;
+storage operator-(storage& a, storage& b) {
+    return elementwise_op(a, b, [](double x, double y) { return x - y; });
 }
+
 
 // Element-wise multiplication
-storage operator *(storage &a,storage &b) {
-    storage result(a.dimensions(), 0);
-    for (size_t i = 0; i < a.size; i++) {
-        result.data[i] =  a.data[i] * b.data[i];
-    }
-    return result;
+storage operator*(storage& a, storage& b) {
+    return elementwise_op(a, b, [](double x, double y) { return x * y; });
 }
 
+
 // Element-wise division
-storage operator /(storage &a,storage &b) {
-    storage result(a.dimensions(), 0);
-    for (size_t i = 0; i < a.size; i++) {
-        result.data[i] =  a.data[i] / b.data[i];
-    }
-    return result;
+storage operator/(storage& a, storage& b) {
+    return elementwise_op(a, b, [](double x, double y) { return x / y; });
 }
+
 
 // Raise each element to a power
 storage operator ^(storage &a, double power) {
@@ -199,17 +220,20 @@ storage s_sin(storage &a,size_t terms) {
     storage return_variable = a;
     double result = 0;
     double fact = 1;
-    for (size_t i = 0; i < a.size; i++) {
+    size_t a_offset;
+    std::vector<size_t> index(a.shape.size(),0);
+    do {
+        a_offset = offset(a.stride,index);
         for (int j = 0; j < terms ; j++) {
             fact = 1;
             for (int k = 1; k <= (2*j+1); k++) {
                 fact *= k;
             }
-            result += (pow((0-1),j)*pow((a.data[i]),(2*j+1)))/fact;
+            result += (pow((0-1),j)*pow((a.data[a_offset]),(2*j+1)))/fact;
         }
-        return_variable.data[i] = result;
+        return_variable.data[a_offset] = result;
         result = 0;
-    }
+    }while(increment(index,a.shape));
     return return_variable;
 }
 
@@ -218,17 +242,20 @@ storage s_cos(storage &a,size_t terms) {
     storage return_variable = a;
     double result = 0;
     float fact = 1;
-    for (size_t i = 0; i < a.size; i++) {
+    size_t a_offset;
+    std::vector<size_t> index(a.shape.size(),0);
+    do {
+        a_offset = offset(a.stride,index);
         for (int j = 0; j < terms ; j++) {
             fact = 1;
             for (int k = 1; k <= (2*j); k++) {
                 fact *= k;
             }
-            result += (pow((0-1),j)*pow((a.data[i]),(2*j)))/fact;
+            result += (pow((0-1),j)*pow((a.data[a_offset]),(2*j)))/fact;
         }
-        return_variable.data[i] = result;
+        return_variable.data[a_offset] = result;
         result = 0;
-    }
+    }while(increment(index,a.shape));
     return return_variable;
 }
 
@@ -314,6 +341,7 @@ public:
         int index = 0;
         flatten(list,a,index);
         data.data = a;
+        data.set_stride(data.shape);
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
 
