@@ -1,0 +1,31 @@
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include "storage.h"
+#include "Autograd.h"
+#include "Tanitra.h"
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(Ganit, m) {
+    pybind11::class_<Tensor>(m, "Tanitra")
+        .def(pybind11::init<py::list&>())
+        .def("__getitem__", &Tensor::access)
+        .def("__setitem__", &Tensor::change_value)
+        .def("print", &Tensor::print)
+        .def("reshape",&reshape)
+        .def("backward",py::overload_cast<>(&Tensor::backward))
+        .def("grad",&Tensor::grad)
+        .def("__add__",&add)
+        .def("__sub__", &sub)
+        .def("__truediv__",&division)
+        .def("__mul__",&mul)
+        .def("__matmul__",&matmul);
+
+
+    m.def("sin",&sin)
+    .def("cos",&cos)
+    .def("tan",&tan)
+    .def("sec",&sec)
+    .def("csc",&csc)
+    .def("cot", &cot);
+}
