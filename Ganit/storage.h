@@ -14,7 +14,7 @@ private:
 
 public:
     std::vector<size_t> shape;
-    double *data;
+    std::shared_ptr<double[]> data;
     size_t size;
     std::vector<size_t> stride;
 
@@ -29,6 +29,7 @@ public:
     std::vector<size_t> dimensions();
     double access(const std::vector<size_t> &indices);
     void change_value(const std::vector<size_t> &indices, double &value);
+    storage slice(std::vector<std::vector<size_t>>& slice);
     void print();
 };
 

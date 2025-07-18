@@ -10,13 +10,39 @@
 
 namespace py = pybind11;
 
-void Tensor::flatten(py::list &list, double *a,int &index){
+std::vector<size_t> slice_to_triplet(py::slice& slice, size_t& dim_size){
+    py::ssize_t start, stop, step, slice_length;
+    slice.compute(dim_size, &start, &stop, &step, &slice_length);
+    std::vector<size_t> a = {static_cast<size_t>(start),static_cast<size_t>(stop),static_cast<size_t>(step)};
+    return a;
+}
+
+std::vector<size_t> int_to_triplet(py::object& index, size_t& dim_size){
+    size_t start = py::cast<size_t>(index), stop = py::cast<size_t>(index), step = 1;
+    std::vector<size_t> a = {start,stop,step};
+    return a;
+}
+
+std::vector<std::vector<size_t>> slice_to_vector(py::tuple& slice, std::vector<size_t>& a_shape){
+    std::vector<std::vector<size_t>> slice_vector;
+    for (size_t i = 0; i < slice.size(); i++){
+        if(py::isinstance<py::slice>(slice[i])){
+            slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice[i]),a_shape[i]));
+        }
+        else{
+            slice_vector.push_back(int_to_triplet(py::cast<py::object>(slice[i]),a_shape[i]));
+        }
+    }
+    return slice_vector;
+}
+
+void Tensor::flatten(py::list &list, std::shared_ptr<double[]> a,int &index){
         for(auto i: list){
             if(py::isinstance<py::list>(i)){
                 flatten(i.cast<py::list>(),a,index);
             }
             else{
-                a[index] = i.cast<double>();
+                a.get()[index] = i.cast<double>();
                 index++;
             }
         }
@@ -48,6 +74,7 @@ void Tensor::backward(){
     Tensor::Tensor(std::vector<size_t> &dim,double default_value):data(dim,default_value),Tensor_Node(std::make_shared<Node>()){
         Tensor_Node->tensor = std::make_shared<Tensor>(*this);
     }
+    Tensor::Tensor():data(){}
     Tensor::Tensor(py::list& list):Tensor_Node(std::make_shared<Node>()){
         std::vector<size_t> shape;
         get_shape(list,shape);
@@ -57,7 +84,7 @@ void Tensor::backward(){
             size*= shape[i];
         }
         data.size = size;
-        double* a = new double[size];
+        std::shared_ptr<double[]> a(new double[size]);
         int index = 0;
         flatten(list,a,index);
         data.data = a;
@@ -66,8 +93,21 @@ void Tensor::backward(){
     }
 
     // Access and modify elements
-    double Tensor::access(std::vector<size_t> &idx) {
-        return data.access(idx);}
+    Tensor Tensor::access(py::object& slice) {
+        std::vector<std::vector<size_t>> slice_vector;
+        if(py::isinstance<py::slice>(slice)){
+            slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice),data.shape[0]));
+        }
+        else if(py::isinstance<py::tuple>(slice)){
+            slice_vector = slice_to_vector(py::cast<py::tuple>(slice),data.shape);
+        }
+        else{
+            slice_vector.push_back(int_to_triplet(slice,data.shape[0]));
+        }
+        Tensor return_tensor;
+        return_tensor.data = data.slice(slice_vector);
+        return return_tensor;
+    }
     void Tensor::change_value(py::list &idx, double value) {
         std::vector<size_t> index;
         for (const auto &i:idx) {

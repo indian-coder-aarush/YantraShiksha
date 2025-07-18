@@ -7,19 +7,14 @@
 Node::Node(){}
 
 void Node::apply(storage &grad){
-    if(gradient.data==nullptr){
-        gradient = grad;
-    }
-    else{
-        gradient = grad+gradient;
-    }
+    accumulate_gradient(grad);
 }
 
 void Node::accumulate_gradient(storage& grad) {
-    if (gradient.data == nullptr)
-        gradient = grad;
-    else
-        gradient = grad + gradient;
+    if (gradient.data == nullptr){
+        gradient = grad;}
+    else{
+        gradient = grad + gradient;}
     }
 
 void AddNode::apply(storage &grad)  {

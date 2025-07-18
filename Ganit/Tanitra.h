@@ -8,11 +8,13 @@
 #include "Autograd.h"
 #include "Tanitra.h"
 
+namespace py = pybind11;
+
 class Node;
 
 class Tensor {
 private:
-    void flatten(pybind11::list &list, double *a, int &index);
+    void flatten(pybind11::list &list, std::shared_ptr<double[]> a, int &index);
     void get_shape(pybind11::list &list, std::vector<size_t> &shape);
 
 public:
@@ -20,6 +22,7 @@ public:
     std::shared_ptr<Node> Tensor_Node;
 
     // Constructors
+    Tensor();
     Tensor(storage &other);
     Tensor(std::vector<size_t> &dim, double default_value);
     Tensor(pybind11::list &list);
@@ -29,7 +32,7 @@ public:
     Tensor grad();
 
     // Access and mutation
-    double access(std::vector<size_t> &idx);
+    Tensor access(py::object& slice);
     void change_value(pybind11::list &idx, double value);
 
     // Print
