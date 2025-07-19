@@ -230,3 +230,8 @@ Tensor reshape(Tensor &a , std::vector<size_t> &shape){
     b.Tensor_Node = b_Node;
     return b;
 }
+
+Tensor T(Tensor &a){
+    Tensor b(T_s(a.data));
+    return b;
+}

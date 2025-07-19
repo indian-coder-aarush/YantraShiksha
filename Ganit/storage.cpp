@@ -143,7 +143,7 @@ storage operator/(storage& a, storage& b) {
     return elementwise_op(a, b, [](double x, double y) { return x / y; });
 }
 
-storage T(storage& a){
+storage T_s(storage& a){
     size_t change_variable = a.shape[0];
     a.shape[0] = a.shape[1];
     a.shape[1] = change_variable;
@@ -153,7 +153,7 @@ storage T(storage& a){
     return a;
 }
 
-storage T(storage& a, std::vector<size_t>& order){
+storage T_s(storage& a, std::vector<size_t>& order){
     std::vector<size_t> new_shape(a.shape.size(),0);
     std::vector<size_t> new_strides(a.stride.size(),0);
     for(size_t i = 0; i<a.shape.size();i++){

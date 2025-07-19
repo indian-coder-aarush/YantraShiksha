@@ -41,8 +41,8 @@ storage operator/(storage& a, storage& b);
 storage operator^(storage &a, double power);
 
 // Transpose
-storage T(storage& a);
-storage T(storage& a, std::vector<size_t>& order);
+storage T_s(storage& a);
+storage T_s(storage& a, std::vector<size_t>& order);
 
 // Other operations
 storage sqrt(storage &a);

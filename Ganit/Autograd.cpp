@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include"storage.h"
 #include "Tanitra.h"
 #include "Autograd.h"
 
@@ -69,8 +70,8 @@ void ReshapeNode::apply(storage &grad){
 
 void MatmulNode::apply(storage &grad){
         accumulate_gradient(grad);
-        storage grad_a = s_matmul(grad,T(b->tensor->data));
-        storage grad_b = s_matmul(T(a->tensor->data),grad);
+        storage grad_a = s_matmul(grad,T_s(b->tensor->data));
+        storage grad_b = s_matmul(T_s(a->tensor->data),grad);
         a->apply(grad_a);
         b->apply(grad_b);
     }

@@ -19,7 +19,8 @@ PYBIND11_MODULE(Ganit, m) {
         .def("__sub__", &sub)
         .def("__truediv__",&division)
         .def("__mul__",&mul)
-        .def("__matmul__",&matmul);
+        .def("__matmul__",&matmul)
+        .def("T",&T);
 
 
     m.def("sin",&sin)
