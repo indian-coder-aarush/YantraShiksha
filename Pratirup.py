@@ -1,7 +1,8 @@
 import Tanitra
-import cupy as cp
+import numpy as np
 import matplotlib.pyplot as plt
 import Parata
+
 
 # Sequential Model Class
 class AnukramikPratirup:
@@ -91,9 +92,10 @@ class ShabdAyamahPratirup:
                         j = j.lower()
 
                     # Check for valid characters (remove punctuation)
-                    if (j != ' ' and not 33 <= ord(j) <= 47 or 58 <= ord(j) <= 64 or 
-                        91 <= ord(j) <= 96 or 123 <= ord(j) <= 126):
+                    if (j != ' ' and not 33 <= ord(j) <= 47 or 58 <= ord(j) <= 64 or
+                            91 <= ord(j) <= 96 or 123 <= ord(j) <= 126):
                         current_token += j
+
 
                     elif j == ' ':
                         if current_token not in self.token_list:
@@ -103,7 +105,7 @@ class ShabdAyamahPratirup:
                         else:
                             sentence_indices_ith.append(self.token_list[current_token])
                         current_token = ''
-                
+
                 # Final token after loop
                 if current_token not in self.token_list:
                     self.token_list[current_token] = vocabulary
@@ -124,14 +126,14 @@ class ShabdAyamahPratirup:
         if not self.params_initialized:
             # Initialize embedding weights
             self.params = {
-                'embeddings': Tanitra.Tanitra(cp.random.randn(self.vocabulary, self.embedding_dimension)
-                                              * (1.0 / cp.sqrt(self.vocabulary))),
-                'weight_dash': Tanitra.Tanitra(cp.random.randn(self.embedding_dimension, self.vocabulary)
-                                               / cp.sqrt(self.vocabulary / 2))
+                'embeddings': Tanitra.Tanitra(np.random.randn(self.vocabulary, self.embedding_dimension)
+                                              * (1.0 / np.sqrt(self.vocabulary))),
+                'weight_dash': Tanitra.Tanitra(np.random.randn(self.embedding_dimension, self.vocabulary)
+                                               / np.sqrt(self.vocabulary / 2))
             }
             self.grad = {
-                'embeddings': Tanitra.Tanitra(cp.zeros((self.vocabulary, self.embedding_dimension))),
-                'weight_dash': Tanitra.Tanitra(cp.zeros((self.embedding_dimension, self.vocabulary)))
+                'embeddings': Tanitra.Tanitra(np.zeros((self.vocabulary, self.embedding_dimension))),
+                'weight_dash': Tanitra.Tanitra(np.zeros((self.embedding_dimension, self.vocabulary)))
             }
             self.params_initialized = True
 
@@ -166,9 +168,9 @@ class ShabdAyamahPratirup:
                 window = sentence[j:j + window_size]
                 for target_pos in range(len(window)):
                     target = window[target_pos]
-                    train_x = cp.zeros(self.vocabulary)
+                    train_x = np.zeros(self.vocabulary)
                     train_x[target] = 1
-                    train_y = cp.zeros(self.vocabulary)
+                    train_y = np.zeros(self.vocabulary)
                     for context_pos in range(len(window)):
                         if context_pos != target_pos:
                             context = window[context_pos]
