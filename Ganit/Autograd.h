@@ -64,3 +64,9 @@ public:
     std::shared_ptr<Node> a, b;
     void apply(storage& grad) override;
 };
+
+class TNode:public Node{
+public:
+    std::shared_ptr<Node> a;
+    void apply(storage& grad) override;
+};

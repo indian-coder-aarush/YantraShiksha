@@ -75,3 +75,9 @@ void MatmulNode::apply(storage &grad){
         a->apply(grad_a);
         b->apply(grad_b);
     }
+
+void TNode::apply(storage &grad){
+    accumulate_gradient(grad);
+    storage grad_a = T_s(grad);
+    a->apply(grad_a);
+}

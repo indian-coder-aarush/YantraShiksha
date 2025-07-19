@@ -233,5 +233,9 @@ Tensor reshape(Tensor &a , std::vector<size_t> &shape){
 
 Tensor T(Tensor &a){
     Tensor b(T_s(a.data));
+    std::shared_ptr<TNode> b_Node  = std::make_shared<TNode>();
+    b_Node->tensor =  std::make_shared<Tensor>(b);
+    b_Node->a = a.Tensor_Node;
+    b.Tensor_Node = b_Node;
     return b;
 }
