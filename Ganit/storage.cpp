@@ -22,26 +22,22 @@ bool increment(std::vector<size_t>& index,std::vector<size_t>& shape){
     return false;
 }
 
-void storage::print_data(int depth , size_t &index) {
-if (data == nullptr) {
-        std::cout << "Tensor has no data!" << std::endl;
-        return;
-    }
-        std::cout << '['<<' ';
-        for (int i = 0; i < shape[depth]; ++i) {
-            if (depth == shape.size() - 1) {
-                std::cout << data.get()[index++]<<' ';
-            }
-            else {
-                print_data(depth + 1,index);
-            }
+void storage::print_data(int depth , std::vector<size_t> &index) {
+    std::cout << '[' << ' ';
+    for (size_t i = 0; i < shape[depth]; ++i) {
+        index[depth] = i;
+        if (depth == shape.size() - 1) {
+            std::cout << this->access(index) << ' ';
+        } else {
+            print_data(depth + 1, index);
         }
-        std::cout <<']';
     }
+    std::cout << ']';
+}
 
 storage::storage(const storage& other)
-      : shape(other.shape), size(other.size), data(std::shared_ptr<double[]>(other.data, other.data.get())) {
-        set_stride(shape);
+      : shape(other.shape), size(other.size), data(std::shared_ptr<double[]>(other.data, other.data.get())) ,
+      stride(other.stride){
     }
 
 void storage::set_stride(const std::vector<size_t> &shape){
@@ -102,7 +98,7 @@ double storage::access(const std::vector<size_t> &indices) {
 
 
     void storage::print() {
-        size_t a = 0;
+        std::vector<size_t> a(shape.size(),0);
         print_data(0,a);
     }
 
@@ -144,13 +140,12 @@ storage operator/(storage& a, storage& b) {
 }
 
 storage T_s(storage& a){
-    size_t change_variable = a.shape[0];
-    a.shape[0] = a.shape[1];
-    a.shape[1] = change_variable;
-    change_variable = a.stride[0];
-    a.stride[0] = a.stride[1];
-    a.stride[1] = change_variable;
-    return a;
+    storage b(a);
+    b.shape[0] = a.shape[1];
+    b.shape[1] = a.shape[0];
+    b.stride[0] = a.stride[1];
+    b.stride[1] = a.stride[0];
+    return b;
 }
 
 storage T_s(storage& a, std::vector<size_t>& order){
@@ -160,9 +155,10 @@ storage T_s(storage& a, std::vector<size_t>& order){
         new_strides[i] = a.stride[order[i]];
         new_shape[i] = a.shape[order[i]];
     }
-    a.shape = new_shape;
-    a.stride = new_strides;
-    return a;
+    storage b(a);
+    b.shape = new_shape;
+    b.stride = new_strides;
+    return b;
 }
 
 // Raise each element to a power

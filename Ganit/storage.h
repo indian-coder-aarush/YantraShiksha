@@ -10,7 +10,7 @@ bool increment(std::vector<size_t>& index, std::vector<size_t>& shape);
 // Main storage class
 class storage {
 private:
-    void print_data(int depth, size_t &index);
+    void print_data(int depth,  std::vector<size_t> &index);
 
 public:
     std::vector<size_t> shape;
