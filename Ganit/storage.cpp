@@ -257,6 +257,12 @@ storage storage::slice(std::vector<std::vector<size_t>>& slice){
         new_stride.push_back(stride[i]*slice[i][2]);
         index_offset += stride[i]*slice[i][0];
     }
+    if(new_shape.size()!=shape.size()){
+        for (size_t i = slice.size(); i < shape.size(); i++) {
+        new_shape.push_back(shape[i]);
+        new_stride.push_back(stride[i]);
+    }
+    }
     storage b;
     b.stride = new_stride;
     b.shape = new_shape;

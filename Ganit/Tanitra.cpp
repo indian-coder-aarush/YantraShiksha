@@ -104,8 +104,8 @@ void Tensor::backward(){
         else{
             slice_vector.push_back(int_to_triplet(slice,data.shape[0]));
         }
-        Tensor return_tensor;
-        return_tensor.data = data.slice(slice_vector);
+
+        Tensor return_tensor(data.slice(slice_vector));
         return return_tensor;
     }
     void Tensor::change_value(py::list &idx, double value) {
