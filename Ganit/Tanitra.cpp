@@ -19,7 +19,7 @@ std::vector<size_t> slice_to_triplet(py::slice& slice, size_t& dim_size){
 
 std::vector<size_t> int_to_triplet(py::object& index, size_t& dim_size){
     size_t start = py::cast<size_t>(index), stop = py::cast<size_t>(index), step = 1;
-    std::vector<size_t> a = {start,stop,step};
+    std::vector<size_t> a = {start};
     return a;
 }
 
