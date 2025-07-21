@@ -254,7 +254,7 @@ storage storage::slice(std::vector<std::vector<size_t>>& slice){
     size_t index_offset = 0;
     for(int i=0;i<slice.size();i++){
         if(slice[i].size() != 1){
-        new_shape.push_back(static_cast<size_t>((slice[i][1]-slice[i][0])/slice[i][2]) +1);
+        new_shape.push_back(static_cast<size_t>((slice[i][1]-slice[i][0])/slice[i][2]));
         new_stride.push_back(stride[i]*slice[i][2]);}
         index_offset += stride[i]*slice[i][0];
     }
