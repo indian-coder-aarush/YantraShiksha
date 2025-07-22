@@ -36,7 +36,7 @@ void storage::print_data(int depth , std::vector<size_t> &index) {
 }
 
 storage::storage(const storage& other)
-      : shape(other.shape), size(other.size), data(std::shared_ptr<double[]>(other.data, other.data.get())) ,
+      : shape(other.shape), size(other.size), data(other.data) ,
       stride(other.stride){
     }
 
@@ -55,7 +55,7 @@ storage& storage::operator=(const storage& other) {
         if (this != &other) {
             shape = other.shape;
             size  = other.size;
-            data  = std::shared_ptr<double[]>(other.data,other.data.get());
+            data  = other.data;
         }
         set_stride(shape);
         return *this;
@@ -65,10 +65,10 @@ storage::storage(const std::vector<size_t> &dim,double default_value) : shape(di
         for (const size_t &i:dim) {
             size *= i;
         }
-        std::shared_ptr<double[]> a(new double[size]);
+        double* a = new double[size];
         data = a;
         for (size_t i = 0; i < size; i++) {
-            *(data.get()+i) = default_value;
+            *(data+i) = default_value;
         }
         set_stride(shape);
     }
@@ -85,7 +85,7 @@ double storage::access(const std::vector<size_t> &indices) {
         for (size_t i = 0; i < indices.size(); i++) {
             index += stride[i]*indices[i];
         }
-        return *(data.get()+index);
+        return *(data+index);
     }
 
     void storage::change_value(const std::vector<size_t> &indices, double &value) {
@@ -93,7 +93,7 @@ double storage::access(const std::vector<size_t> &indices) {
         for (size_t i = 0; i < indices.size(); i++) {
             index += stride[i]*indices[i];
         }
-        *(data.get()+index) = value;
+        *(data+index) = value;
     }
 
 
@@ -113,7 +113,7 @@ storage elementwise_op(storage &a,storage &b,Op op) {
         a_offset = offset(a.stride,index);
         b_offset = offset(b.stride,index);
         result_offset = offset(result.stride,index);
-        *(result.data.get()+result_offset) = op(*(a.data.get()+a_offset),*(b.data.get()+b_offset));
+        *(result.data+result_offset) = op(*(a.data+a_offset),*(b.data+b_offset));
     }while(increment(index,a.shape));
     return result;
 }
@@ -165,7 +165,7 @@ storage T_s(storage& a, std::vector<size_t>& order){
 storage operator ^(storage &a, double power) {
     storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
-        result.data.get()[i] = pow(a.data.get()[i],power);
+        result.data[i] = pow(a.data[i],power);
     }
     return result;
 }
@@ -174,7 +174,7 @@ storage operator ^(storage &a, double power) {
 storage sqrt(storage &a) {
     storage result(a.dimensions(), 0);
     for (size_t i = 0; i < a.size; i++) {
-        *(result.data.get()+i) = pow(*(a.data.get()+i),0.5);
+        *(result.data+i) = pow(*(a.data+i),0.5);
     }
     return result;
 }
@@ -199,7 +199,7 @@ storage s_matmul(storage &a , storage &b){
 double dot(storage &a , storage &b) {
     double result = 0;
     for (size_t i = 0; i < a.shape[0]; i++) {
-        result += a.data.get()[i] * b.data.get()[i];
+        result += a.data[i] * b.data[i];
     }
     return result;
 }
@@ -218,9 +218,9 @@ storage s_sin(storage &a,size_t terms) {
             for (int k = 1; k <= (2*j+1); k++) {
                 fact *= k;
             }
-            result += (pow((0-1),j)*pow((*(a.data.get()+a_offset)),(2*j+1)))/fact;
+            result += (pow((0-1),j)*pow((*(a.data+a_offset)),(2*j+1)))/fact;
         }
-        *(return_variable.data.get()+a_offset) = result;
+        *(return_variable.data+a_offset) = result;
         result = 0;
     }while(increment(index,a.shape));
     return return_variable;
@@ -240,9 +240,9 @@ storage s_cos(storage &a,size_t terms) {
             for (int k = 1; k <= (2*j); k++) {
                 fact *= k;
             }
-            result += (pow((0-1),j)*pow((*(a.data.get()+a_offset)),(2*j)))/fact;
+            result += (pow((0-1),j)*pow((*(a.data+a_offset)),(2*j)))/fact;
         }
-        *(return_variable.data.get()+a_offset) = result;
+        *(return_variable.data+a_offset) = result;
         result = 0;
     }while(increment(index,a.shape));
     return return_variable;
@@ -254,7 +254,7 @@ storage storage::slice(std::vector<std::vector<size_t>>& slice){
     size_t index_offset = 0;
     for(int i=0;i<slice.size();i++){
         if(slice[i].size() != 1){
-        new_shape.push_back(static_cast<size_t>((slice[i][1]-slice[i][0])/slice[i][2]));
+        new_shape.push_back(static_cast<size_t>((slice[i][1]-slice[i][0]+slice[i][2]-1)/slice[i][2]));
         new_stride.push_back(stride[i]*slice[i][2]);}
         index_offset += stride[i]*slice[i][0];
     }
@@ -267,6 +267,6 @@ storage storage::slice(std::vector<std::vector<size_t>>& slice){
     storage b;
     b.stride = new_stride;
     b.shape = new_shape;
-    b.data = std::shared_ptr<double[]>(data,data.get()+index_offset);
+    b.data = &data[index_offset];
     return b;
 }

@@ -14,7 +14,7 @@ private:
 
 public:
     std::vector<size_t> shape;
-    std::shared_ptr<double[]> data;
+    double* data;
     size_t size;
     std::vector<size_t> stride;
 

@@ -36,13 +36,13 @@ std::vector<std::vector<size_t>> slice_to_vector(py::tuple& slice, std::vector<s
     return slice_vector;
 }
 
-void Tensor::flatten(py::list &list, std::shared_ptr<double[]> a,int &index){
+void Tensor::flatten(py::list &list, double* a,int &index){
         for(auto i: list){
             if(py::isinstance<py::list>(i)){
                 flatten(i.cast<py::list>(),a,index);
             }
             else{
-                a.get()[index] = i.cast<double>();
+                a[index] = i.cast<double>();
                 index++;
             }
         }
@@ -84,7 +84,7 @@ void Tensor::backward(){
             size*= shape[i];
         }
         data.size = size;
-        std::shared_ptr<double[]> a(new double[size]);
+        double* a = new double[size];
         int index = 0;
         flatten(list,a,index);
         data.data = a;

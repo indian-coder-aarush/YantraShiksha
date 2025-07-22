@@ -11,7 +11,6 @@ PYBIND11_MODULE(Ganit, m) {
         .def(pybind11::init<py::list&>())
         .def("__getitem__", &Tensor::access)
         .def("__setitem__", &Tensor::change_value)
-        .def("print", &Tensor::print)
         .def("reshape",&reshape)
         .def("backward",py::overload_cast<>(&Tensor::backward))
         .def("grad",&Tensor::grad)
@@ -28,5 +27,6 @@ PYBIND11_MODULE(Ganit, m) {
     .def("tan",&tan)
     .def("sec",&sec)
     .def("csc",&csc)
-    .def("cot", &cot);
+    .def("cot", &cot)
+    .def("print",&Tensor::print);
 }

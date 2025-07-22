@@ -14,7 +14,7 @@ class Node;
 
 class Tensor {
 private:
-    void flatten(pybind11::list &list, std::shared_ptr<double[]> a, int &index);
+    void flatten(pybind11::list &list, double* a, int &index);
     void get_shape(pybind11::list &list, std::vector<size_t> &shape);
 
 public:
