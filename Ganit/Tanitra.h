@@ -33,7 +33,7 @@ public:
 
     // Access and mutation
     Tensor access(py::object& slice);
-    void change_value(pybind11::list &idx, double value);
+    void change_value(py::object& slice, py::list& replace);
 
     // Print
     void print();

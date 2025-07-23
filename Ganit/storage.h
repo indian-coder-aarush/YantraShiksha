@@ -29,6 +29,7 @@ public:
     std::vector<size_t> dimensions();
     double access(const std::vector<size_t> &indices);
     void change_value(const std::vector<size_t> &indices, double &value);
+    void setslice(std::vector<std::vector<size_t>>& slice,storage& other);
     storage slice(std::vector<std::vector<size_t>>& slice);
     void print();
 };

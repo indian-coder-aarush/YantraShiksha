@@ -108,12 +108,19 @@ void Tensor::backward(){
         Tensor return_tensor(data.slice(slice_vector));
         return return_tensor;
     }
-    void Tensor::change_value(py::list &idx, double value) {
-        std::vector<size_t> index;
-        for (const auto &i:idx) {
-            index.push_back(i.cast<size_t>());
+    void Tensor::change_value(py::object& slice, py::list& replace) {
+        std::vector<std::vector<size_t>> slice_vector;
+        if(py::isinstance<py::slice>(slice)){
+            slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice),data.shape[0]));
         }
-        data.change_value(index,value);
+        else if(py::isinstance<py::tuple>(slice)){
+            slice_vector = slice_to_vector(py::cast<py::tuple>(slice),data.shape);
+        }
+        else{
+            slice_vector.push_back(int_to_triplet(slice,data.shape[0]));
+        }
+        Tensor a(replace);
+        data.setslice(slice_vector,a.data);
     }
 
     // Print tensor

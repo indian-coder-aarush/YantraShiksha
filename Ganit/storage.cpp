@@ -270,3 +270,25 @@ storage storage::slice(std::vector<std::vector<size_t>>& slice){
     b.data = &data[index_offset];
     return b;
 }
+
+void storage::setslice(std::vector<std::vector<size_t>>& slice,storage& other){
+    size_t index_offset = 0;
+    std::vector<size_t> new_stride;
+    for(int i=0;i<slice.size();i++){
+        if(slice[i].size() != 1){
+        new_stride.push_back(stride[i]*slice[i][2]);}
+        index_offset += stride[i]*slice[i][0];
+    }
+    if(new_stride.size()!=stride.size()){
+        for (size_t i = slice.size(); i < shape.size(); i++) {
+        new_stride.push_back(stride[i]);
+    }
+    }
+    size_t offset_assign;
+    std::vector<size_t> index(other.shape.size(), 0);
+    double* data_to_be_assigned = &data[index_offset];
+    do{
+        offset_assign = offset(new_stride, index);
+        data[offset_assign] = other.access(index);
+    }while(increment(index,other.shape));
+}
