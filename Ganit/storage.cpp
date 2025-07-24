@@ -181,15 +181,14 @@ storage sqrt(storage &a) {
 
 // Matrix multiplication
 storage s_matmul(storage &a , storage &b){
-    storage result(a.dimensions(), 0);
-    double result_i_j = 0;
-    for (size_t i = 0; i < a.shape[0]; i++) {
-        for (size_t j = 0; j < b.shape[1]; j++) {
-            for (size_t k = 0; k < b.shape[0]; k++) {
-                result_i_j += a.access({i,k}) * b.access({k,j});
+    storage result({a.shape[0],b.shape[1]}, 0);
+    for (int i = 0; i < a.shape[0]; i++) {
+        for (int j = 0; j < b.shape[1]; j++) {
+        double result_i_j = 0;
+            for (int k = 0; k < b.shape[0]; k++) {
+                result_i_j += a.data[i*a.stride[0]+k] * b.data[k*b.stride[0]+j];
             }
-            result.change_value({i,j}, result_i_j);
-            result_i_j = 0;
+            result.data[i*result.stride[0]+j] =  result_i_j;
         }
     }
     return result;
