@@ -106,6 +106,11 @@ void Tensor::backward(){
         }
 
         Tensor return_tensor(data.slice(slice_vector));
+    std::shared_ptr<GetItemNode> c_Node = std::make_shared<GetItemNode>();
+    c_Node->tensor  = std::make_shared<Tensor>(return_tensor);
+    c_Node->a = Tensor_Node;
+    c_Node->slice = slice_vector;
+    return_tensor.Tensor_Node = c_Node;
         return return_tensor;
     }
     void change_value(Tensor& a, py::object& slice, Tensor& replace) {

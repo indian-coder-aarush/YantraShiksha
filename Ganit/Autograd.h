@@ -1,4 +1,4 @@
-#pragma once
+  #pragma once
 #include <memory>
 #include <vector>
 #include "storage.h"
@@ -74,6 +74,13 @@ public:
 class SetItemNode:public Node{
 public:
     std::shared_ptr<Node> a,b;
+    std::vector<std::vector<size_t>> slice;
+    void apply(storage &grad) override;
+};
+
+class GetItemNode:public Node{
+public:
+    std::shared_ptr<Node> a;
     std::vector<std::vector<size_t>> slice;
     void apply(storage &grad) override;
 };
