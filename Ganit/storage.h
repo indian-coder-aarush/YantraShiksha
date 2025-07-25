@@ -23,6 +23,7 @@ public:
     storage(const storage& other);  // Copy constructor
     storage& operator=(const storage& other);  // Copy assignment
     ~storage();  // Destructor
+    storage copy();
 
     void set_stride(const std::vector<size_t> &shape);
 

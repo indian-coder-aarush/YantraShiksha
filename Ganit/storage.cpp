@@ -76,6 +76,18 @@ storage::storage(const std::vector<size_t> &dim,double default_value) : shape(di
 storage::~storage() {
     }
 
+storage storage::copy(){
+    storage copy;
+    copy.data = new double[size];
+    copy.shape = shape;
+    copy.stride = stride;
+    copy.size = size;
+    for(int i = 0; i < copy.size; i++){
+        copy.data[i] = data[i];
+    }
+    return copy;
+}
+
 std::vector<size_t> storage::dimensions() {
         return shape;
     }
@@ -267,6 +279,10 @@ storage storage::slice(std::vector<std::vector<size_t>>& slice){
     b.stride = new_stride;
     b.shape = new_shape;
     b.data = &data[index_offset];
+    b.size = 1;
+    for(int j = 0; j<b.shape.size();j++){
+        b.size *= b.shape[j];
+    }
     return b;
 }
 
