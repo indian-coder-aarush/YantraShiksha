@@ -108,20 +108,28 @@ void Tensor::backward(){
         Tensor return_tensor(data.slice(slice_vector));
         return return_tensor;
     }
-    void Tensor::change_value(py::object& slice, py::list& replace) {
+    void change_value(Tensor& a, py::object& slice, Tensor& replace) {
         std::vector<std::vector<size_t>> slice_vector;
         if(py::isinstance<py::slice>(slice)){
-            slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice),data.shape[0]));
+            slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice),a.data.shape[0]));
         }
         else if(py::isinstance<py::tuple>(slice)){
-            slice_vector = slice_to_vector(py::cast<py::tuple>(slice),data.shape);
+            slice_vector = slice_to_vector(py::cast<py::tuple>(slice),a.data.shape);
         }
         else{
-            slice_vector.push_back(int_to_triplet(slice,data.shape[0]));
+            slice_vector.push_back(int_to_triplet(slice,a.data.shape[0]));
         }
-        Tensor a(replace);
-        data.setslice(slice_vector,a.data);
-    }
+        a.data.setslice(slice_vector,replace.data);
+        Tensor a2;
+        a2.data = a.data;
+        std::shared_ptr<SetItemNode> a2_node = std::make_shared<SetItemNode>();
+        a2_node->tensor = std::make_shared<Tensor>(a2);
+        a2_node->b = a.Tensor_Node;
+        a2_node->a = replace.Tensor_Node;
+        a2_node->slice = slice_vector;
+        a2.Tensor_Node = a2_node;
+        a = a2;
+        }
 
     // Print tensor
     void Tensor::print() {

@@ -10,7 +10,7 @@ PYBIND11_MODULE(Ganit, m) {
     pybind11::class_<Tensor>(m, "Tanitra")
         .def(pybind11::init<py::list&>())
         .def("__getitem__", &Tensor::access)
-        .def("__setitem__", &Tensor::change_value)
+        .def("__setitem__", &change_value)
         .def("reshape",&reshape)
         .def("backward",py::overload_cast<>(&Tensor::backward))
         .def("grad",&Tensor::grad)

@@ -33,7 +33,6 @@ public:
 
     // Access and mutation
     Tensor access(py::object& slice);
-    void change_value(py::object& slice, py::list& replace);
 
     // Print
     void print();
@@ -55,3 +54,5 @@ Tensor tan(Tensor &a);
 Tensor sec(Tensor &a);
 Tensor csc(Tensor &a);
 Tensor cot(Tensor &a);
+
+void change_value(Tensor& a, py::object& slice, Tensor& replace);

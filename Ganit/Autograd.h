@@ -70,3 +70,10 @@ public:
     std::shared_ptr<Node> a;
     void apply(storage& grad) override;
 };
+
+class SetItemNode:public Node{
+public:
+    std::shared_ptr<Node> a,b;
+    std::vector<std::vector<size_t>> slice;
+    void apply(storage &grad) override;
+};

@@ -81,3 +81,12 @@ void TNode::apply(storage &grad){
     storage grad_a = T_s(grad);
     a->apply(grad_a);
 }
+
+void SetItemNode::apply(storage &grad){
+    accumulate_gradient(grad);
+    storage grad_a = grad.slice(slice);
+    storage zeros(a->tensor->data.shape,0);
+    grad.setslice(slice,zeros);
+    a->apply(grad_a);
+    b->apply(grad);
+}
