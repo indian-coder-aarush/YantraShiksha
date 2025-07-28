@@ -46,6 +46,7 @@ Tensor division(Tensor &a, Tensor &b);
 Tensor matmul(Tensor &a, Tensor &b);
 Tensor reshape(Tensor &a, std::vector<size_t> &shape);
 Tensor T(Tensor &a);
+Tensor convolution(Tensor &a, Tensor &b, size_t stride)
 
 // Trigonometric functions
 Tensor sin(Tensor &a);
