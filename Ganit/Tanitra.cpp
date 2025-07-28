@@ -260,3 +260,9 @@ Tensor T(Tensor &a){
     b.Tensor_Node = b_Node;
     return b;
 }
+
+Tensor convolution(Tensor &a, Tensor &b, size_t stride){
+    storage c = convolution(a,b,stride);
+    Tensor d(c);
+    return d;
+}
