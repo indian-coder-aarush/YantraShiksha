@@ -262,7 +262,7 @@ Tensor T(Tensor &a){
 }
 
 Tensor convolution(Tensor &a, Tensor &b, size_t stride){
-    storage c = convolution(a,b,stride);
+    storage c = convolution(a.data,b.data,stride);
     Tensor d(c);
     return d;
 }
