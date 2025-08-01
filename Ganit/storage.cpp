@@ -324,7 +324,7 @@ storage convolution(storage a,storage b,size_t stride){
             window = a.slice(slice);
             window = window*b;
             for(int k = 0;k<window.size;k++){
-                value_i_j+=window[k];
+                value_i_j+=window.data[k];
             }
             output.data[i*output.stride[0]+j] = value_i_j;
             value_i_j = 0;
