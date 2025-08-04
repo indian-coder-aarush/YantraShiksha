@@ -23,7 +23,6 @@ YantraShiksha provides a full stack for building, training, and experimenting wi
 ## 🚀 Getting Started
 
 ### Installation
-```
 **Requirements:** Python 3.8+, numpy, matplotlib, pybind11 (only for building from source)
 
 #### Method 1: Direct File Inclusion (Recommended)
@@ -74,13 +73,6 @@ y = Tanitra.Tanitra(np.random.randint(0, 2, (100, 1)))
 model.learn(X, y, epochs=100, lr=0.01)
 ```
 
-**Usage:**
-```python
-import Tanitra
-import Parata
-import Pratirup
-import Ganit  # C++ tensor core
-```
 
 ---
 
@@ -159,8 +151,6 @@ conv_result = Ganit.convolution(a, b, stride=1)
 - **Extensible Layers**: Add your own layers by subclassing `Parata`
 - **Transformer Support**: Build transformer models with attention and positional encoding
 - **High-Performance C++ Backend**: Ganit tensor core for optimized operations
-
-
 
 ---
 
