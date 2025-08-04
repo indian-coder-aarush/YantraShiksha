@@ -17,8 +17,18 @@
 
 ## Installation
 
+### Option 1: Use Pre-compiled Binary (Recommended)
+The project includes a pre-compiled `Ganit.cp313-win_amd64.pyd` file for Windows with Python 3.13. Simply install the Python dependencies:
+
 ```bash
-pip install -r requirements.txt
+pip install numpy matplotlib
+```
+
+### Option 2: Build from Source
+If you need to build the C++ extensions for a different platform or Python version:
+
+```bash
+pip install numpy matplotlib pybind11
 python setup.py build_ext --inplace
 ```
 
@@ -26,7 +36,7 @@ Requirements:
 - Python 3.8+
 - numpy
 - matplotlib
-- pybind11
+- pybind11 (only for building from source)
 
 ---
 
