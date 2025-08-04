@@ -20,32 +20,36 @@ YantraShiksha provides a full stack for building, training, and experimenting wi
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Installation
+```
+**Requirements:** Python 3.8+, numpy, matplotlib, pybind11 (only for building from source)
 
-#### Option 1: Use Pre-compiled Binary (Recommended)
-The project includes a pre-compiled `Ganit.cp313-win_amd64.pyd` file for Windows with Python 3.13. Simply install the Python dependencies:
+#### Method 1: Direct File Inclusion (Recommended)
+Copy these files to your project:
+- `Tanitra.py` - Python tensor implementation
+- `Parata.py` - Layer definitions  
+- `Pratirup.py` - Model APIs
+- `Ganit.cp313-win_amd64.pyd` - Pre-compiled C++ tensor core
 
+#### Method 2: Build Custom Binary
+For different platforms/Python versions:
 ```bash
-pip install numpy matplotlib
+# Copy Ganit/ directory to your project
+pip install pybind11 numpy
+python setup.py build_ext --inplace
+# Copy generated .pyd/.so file to your project
 ```
 
-#### Option 2: Build from Source
-If you need to build the C++ extensions for a different platform or Python version:
-
+#### Method 3: Development Setup
+For contributing or modifications:
 ```bash
+git clone <repository-url>
+cd YantraShiksha
 pip install numpy matplotlib pybind11
 python setup.py build_ext --inplace
 ```
-
-**Requirements:**
-- Python 3.8+
-- numpy
-- matplotlib
-- pybind11 (only for building from source)
-
----
 
 ### Quick Example
 
@@ -68,6 +72,14 @@ y = Tanitra.Tanitra(np.random.randint(0, 2, (100, 1)))
 
 # Train
 model.learn(X, y, epochs=100, lr=0.01)
+```
+
+**Usage:**
+```python
+import Tanitra
+import Parata
+import Pratirup
+import Ganit  # C++ tensor core
 ```
 
 ---
@@ -148,40 +160,7 @@ conv_result = Ganit.convolution(a, b, stride=1)
 - **Transformer Support**: Build transformer models with attention and positional encoding
 - **High-Performance C++ Backend**: Ganit tensor core for optimized operations
 
-## 📦 Adding to Your Project
 
-### Method 1: Direct File Inclusion (Recommended)
-Copy these files to your project:
-- `Tanitra.py` - Python tensor implementation
-- `Parata.py` - Layer definitions  
-- `Pratirup.py` - Model APIs
-- `Ganit.cp313-win_amd64.pyd` - Pre-compiled C++ tensor core
-
-### Method 2: Build Custom Binary
-For different platforms/Python versions:
-```bash
-# Copy Ganit/ directory to your project
-pip install pybind11 numpy
-python setup.py build_ext --inplace
-# Copy generated .pyd/.so file to your project
-```
-
-### Method 3: Development Setup
-For contributing or modifications:
-```bash
-git clone <repository-url>
-cd YantraShiksha
-pip install numpy matplotlib pybind11
-python setup.py build_ext --inplace
-```
-
-**Usage:**
-```python
-import Tanitra
-import Parata
-import Pratirup
-import Ganit  # C++ tensor core
-```
 
 ---
 
