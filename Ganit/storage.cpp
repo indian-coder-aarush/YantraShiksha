@@ -56,8 +56,8 @@ storage& storage::operator=(const storage& other) {
             shape = other.shape;
             size  = other.size;
             data  = other.data;
+            stride = other.stride;
         }
-        set_stride(shape);
         return *this;
     }
 
@@ -309,7 +309,7 @@ void storage::setslice(std::vector<std::vector<size_t>>& slice,storage& other){
 
 }
 
-storage convolution(storage a,storage b,size_t stride){
+storage convolution_s(storage a,storage b,size_t stride){
     std::vector<size_t> output_shape = {static_cast<size_t>((a.shape[0]-b.shape[0])/stride)+1,
     static_cast<size_t>((a.shape[1]-b.shape[1])/stride)+1};
     storage output(output_shape,0);
@@ -318,19 +318,21 @@ storage convolution(storage a,storage b,size_t stride){
     size_t start_j = 0;
     std::vector<std::vector<size_t>> slice;
     storage window;
-    for(int i = 0;i < a.shape[0];i++){
-        for(int j = 0; j < a.shape[1]; j++){
+    for(int i = 0;i < output.shape[0];i++){
+        start_j = 0;
+        for(int j = 0; j < output.shape[1]; j++){
+            value_i_j = 0;
             slice = {{start_i,start_i+b.shape[0],1},{start_j,start_j+b.shape[1],1}};
             window = a.slice(slice);
-            window = window*b;
-            for(int k = 0;k<window.size;k++){
-                value_i_j+=window.data[k];
+            for(int k = 0;k<window.shape[0];k++){
+                for(int l = 0;l<window.shape[1];l++){
+                    value_i_j+=window.data[k*window.stride[0]+l]*b.data[k*b.stride[0]+l];
+                }
             }
             output.data[i*output.stride[0]+j] = value_i_j;
-            value_i_j = 0;
-            start_i+=stride;
+            start_j += stride;
         }
-        start_j += stride;
+        start_i+=stride;
     }
     return output;
 }

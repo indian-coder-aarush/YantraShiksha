@@ -111,8 +111,9 @@ void Tensor::backward(){
     c_Node->a = Tensor_Node;
     c_Node->slice = slice_vector;
     return_tensor.Tensor_Node = c_Node;
-        return return_tensor;
+    return return_tensor;
     }
+
     void change_value(Tensor& a, py::object& slice, Tensor& replace) {
         std::vector<std::vector<size_t>> slice_vector;
         if(py::isinstance<py::slice>(slice)){
@@ -262,7 +263,7 @@ Tensor T(Tensor &a){
 }
 
 Tensor convolution(Tensor &a, Tensor &b, size_t stride){
-    storage c = convolution(a.data,b.data,stride);
+    storage c = convolution_s(a.data,b.data,stride);
     Tensor d(c);
     return d;
 }

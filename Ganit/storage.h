@@ -51,5 +51,5 @@ storage sqrt(storage &a);
 storage s_sin(storage &a, size_t terms);
 storage s_cos(storage &a, size_t terms);
 storage s_matmul(storage &a, storage &b);
-storage convolution(storage a,storage b,size_t stride);
+storage convolution_s(storage a,storage b,size_t stride);
 double dot(storage &a, storage &b);
