@@ -60,17 +60,17 @@ import Pratirup
 # Build a simple feedforward network
 model = Pratirup.AnukramikPratirup([
     Parata.PraveshParata((2,)),
-    Parata.GuptaParata(8, 'relu'),
-    Parata.NirgamParata(1, 'sigmoid')
+    Parata.GuptaParata(8, 'sigmoid'),
+    Parata.NirgamParata(1, 'relu')
 ])
 
 # Dummy data
 import numpy as np
 X = Tanitra.Tanitra(np.random.randn(100, 2))
-y = Tanitra.Tanitra(np.random.randint(0, 2, (100, 1)))
+y = Tanitra.Tanitra(np.random.randint(0, 1, (100, 1)))
 
 # Train
-model.learn(X, y, epochs=100, lr=0.01)
+model.learn(X, y, epochs=100, lr=0.1)
 ```
 
 
