@@ -223,24 +223,3 @@ class ShabdAyamahPratirup:
         # Plot loss graph
         plt.plot(epoch, loss_a)
         plt.show()
-
-
-# Example usage of Sequential model
-model = AnukramikPratirup([
-    Parata.GuptaParata(4, 'relu'),
-    Parata.NirgamParata(1, 'relu')
-])
-
-# Input training data
-data_x = Tanitra.Tanitra([[0.1, 0.2, 0.3, 0.4]])
-data_y = Tanitra.Tanitra([[0.2]])
-
-# Input test data
-data_test_x = Tanitra.Tanitra([0.1, 0.2, 0.3, 0.4])
-data_test_y = Tanitra.Tanitra([2])
-
-# Train the model
-model.learn(data_x, data_y)
-
-# Make prediction
-print(model.estimate(data_test_x).data)

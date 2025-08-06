@@ -327,10 +327,3 @@ class PositionalEncoding:
                    positional_encoding[i][j] = np.cos(i / (10000 ** (2 * (j - 1) / self.embedding_dim)))
        x = x + positional_encoding
        return x
-
-
-# ===== Final Test for Transformer Components =====
-a = Tanitra.Tanitra([[1,2,6,7,3],[6,7,4,8,9],[3,4,4,5,7],[2,4,1,0,8]])
-a = PositionalEncoding(5).forward(a)
-b = MultiHeadedAttention(5, 2, 5).forward(a)
-print(b.data)
