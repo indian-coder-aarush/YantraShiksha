@@ -102,7 +102,11 @@ void GetItemNode::apply(storage &grad){
 
 void ConvolutionNode::apply(storage &grad){
     accumulate_gradient(grad);
-    storage a_grad = convolution_s(grad, b->tensor->data, strides);
+    storage padded_grad({grad.shape[0]+b->tensor->data.shape[0],grad.shape[1]+b->tensor->data.shape[1]},0);
+    padded_grad.setslice({{static_cast<int>(b->tensor->data.shape[0]/2),grad.shape[0]-
+    static_cast<int>(b->tensor->data.shape[0]/2)+1,1},{static_cast<int>(b->tensor->data.shape[1]/2),grad.shape[1]-
+    static_cast<int>(b->tensor->data.shape[1]/2)+1,1}},a->tensor->data);
+    storage a_grad = convolution_s(padded_grad, b->tensor->data, strides);
     storage b_grad = convolution_s(a->tensor->data,grad, strides);
     a->apply(a_grad);
     b->apply(b_grad);
