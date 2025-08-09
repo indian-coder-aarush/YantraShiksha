@@ -84,3 +84,10 @@ public:
     std::vector<std::vector<size_t>> slice;
     void apply(storage &grad) override;
 };
+
+class ConvolutionNode:public Node{
+public:
+    std::shared_ptr<Node> a,b;
+    int strides;
+    void apply(storage &grad) override;
+}

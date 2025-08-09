@@ -99,3 +99,5 @@ void GetItemNode::apply(storage &grad){
     storage grad_a = zeros.copy();
     a->apply(grad_a);
 }
+
+void
