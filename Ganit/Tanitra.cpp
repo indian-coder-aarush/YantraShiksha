@@ -260,19 +260,14 @@ Tensor T(Tensor &a){
     return b;
 }
 
-
-
-
-
-
 Tensor convolution(Tensor &a, Tensor &b, size_t stride){
     Tensor c(convolution_s(a.data,b.data,stride));
-    c_node = std::make_shared<ConvolutionNode>();
-    c_node->a = a.Tensor_node;
-    c_node->b = b.Tensor_node;
-    c_node->stride = stride;
-    tensor_c = std::make_shared<tensor>(c);
+    std::shared_ptr<ConvolutionNode> c_node = std::make_shared<ConvolutionNode>();
+    c_node->a = a.Tensor_Node;
+    c_node->b = b.Tensor_Node;
+    c_node->strides = stride;
+    std::shared_ptr<Tensor> tensor_c = std::make_shared<Tensor>(c);
     c_node-> tensor = tensor_c;
-    c.Tensor_node = c_node;
+    c.Tensor_Node = c_node;
     return c;
 }
