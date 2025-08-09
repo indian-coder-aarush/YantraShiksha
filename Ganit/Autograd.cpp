@@ -103,9 +103,10 @@ void GetItemNode::apply(storage &grad){
 void ConvolutionNode::apply(storage &grad){
     accumulate_gradient(grad);
     storage padded_grad({grad.shape[0]+b->tensor->data.shape[0],grad.shape[1]+b->tensor->data.shape[1]},0);
-    padded_grad.setslice({{static_cast<int>(b->tensor->data.shape[0]/2),grad.shape[0]-
-    static_cast<int>(b->tensor->data.shape[0]/2)+1,1},{static_cast<int>(b->tensor->data.shape[1]/2),grad.shape[1]-
-    static_cast<int>(b->tensor->data.shape[1]/2)+1,1}},a->tensor->data);
+    std::vector<std::vector<size_t>> slice_vector = {{static_cast<size_t>(b->tensor->data.shape[0]/2),grad.shape[0]-
+    static_cast<size_t>((b->tensor->data.shape[0]-1)/2)+1,1},{static_cast<size_t>((b->tensor->data.shape[0]-1)/2),
+    grad.shape[1]- static_cast<size_t>((b->tensor->data.shape[1]-1)/2)+1,1}};
+    padded_grad.setslice(slice_vector,a->tensor->data);
     storage a_grad = convolution_s(padded_grad, b->tensor->data, strides);
     storage b_grad = convolution_s(a->tensor->data,grad, strides);
     a->apply(a_grad);
