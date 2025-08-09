@@ -88,6 +88,6 @@ public:
 class ConvolutionNode:public Node{
 public:
     std::shared_ptr<Node> a,b;
-    int strides;
+    size_t strides;
     void apply(storage &grad) override;
-}
+};

@@ -7,9 +7,7 @@
 #include "Tanitra.h"
 #include "Autograd.h"
 #include "storage.h"
-
 namespace py = pybind11;
-
 std::vector<size_t> slice_to_triplet(py::slice& slice, size_t& dim_size){
     py::ssize_t start, stop, step, slice_length;
     slice.compute(dim_size, &start, &stop, &step, &slice_length);
