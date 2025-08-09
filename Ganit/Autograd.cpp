@@ -100,4 +100,8 @@ void GetItemNode::apply(storage &grad){
     a->apply(grad_a);
 }
 
-void
+void ConvolutionNode::apply{
+    accumulate_gradient(grad);
+    a_grad = convolution_s(grad, b, strides);
+    b_grad = convolution_s(a,grad, strides);
+}
