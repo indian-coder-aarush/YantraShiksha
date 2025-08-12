@@ -9,7 +9,7 @@
 #include "storage.h"
 namespace py = pybind11;
 std::vector<int> slice_to_triplet(py::slice& slice, int& dim_size){
-   py::sint start, stop, step, slice_length;
+   py::ssize_t start, stop, step, slice_length;
    slice.compute(dim_size, &start, &stop, &step, &slice_length);
    std::vector<int> a = {static_cast<int>(start),static_cast<int>(stop),static_cast<int>(step)};
    return a;
