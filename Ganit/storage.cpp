@@ -294,6 +294,7 @@ storage s_cos(storage &a,int terms) {
 storage storage::slice(std::vector<std::vector<int>>& slice){
    std::vector<int> new_shape;
    std::vector<int> new_stride;
+   int step;
    int index_offset = 0;
    for(int i=0;i<slice.size();i++){
        if(slice[i][0] < 0){
