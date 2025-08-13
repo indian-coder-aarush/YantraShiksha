@@ -305,12 +305,15 @@ storage storage::slice(std::vector<std::vector<int>>& slice){
                  slice[i][1] = shape[i]+slice[i][1];
        }
        if(slice[i][2] < 0){
-          step = 0-slice[i][2];
+          index_offset += stride[i]*slice[i][1];
+          new_shape.push_back(static_cast<int>((slice[i][0]-slice[i][1]-1)/(-slice[i][2]))+1);
        }
-       new_shape.push_back(static_cast<int>((slice[i][1]-slice[i][0]+slice[i][2]-1)/step));
-       new_stride.push_back(stride[i]*step);
+       else{
+          index_offset += stride[i]*slice[i][0];
+          new_shape.push_back(static_cast<int>((slice[i][1]-slice[i][0]+slice[i][2]-1)/slice[i][2]));
        }
-       index_offset += stride[i]*slice[i][0];
+       new_stride.push_back(stride[i]*slice[i][2]);
+       }
    }
    if(new_shape.size()!=shape.size()){
        for (int i = slice.size(); i < shape.size(); i++) {
