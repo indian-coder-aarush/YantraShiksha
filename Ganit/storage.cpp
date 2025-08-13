@@ -208,7 +208,6 @@ storage operator ^(storage &a, double power) {
    return result;
 }
 
-
 // Element-wise square root
 storage sqrt(storage &a) {
    storage result(a.dimensions(), 0);
@@ -306,7 +305,7 @@ storage storage::slice(std::vector<std::vector<int>>& slice){
        }
        if(slice[i][2] < 0){
           index_offset += stride[i]*slice[i][1];
-          new_shape.push_back(static_cast<int>((slice[i][0]-slice[i][1]-1)/(-slice[i][2]))+1);
+          new_shape.push_back(static_cast<int>((slice[i][1]-slice[i][0]-slice[i][2]+1)/-slice[i][2])+1);
        }
        else{
           index_offset += stride[i]*slice[i][0];
@@ -338,7 +337,8 @@ void storage::setslice(std::vector<std::vector<int>>& slice,storage& other){
    std::vector<int> new_stride;
    for(int i=0;i<slice.size();i++){
        if(slice[i].size() != 1){
-       new_stride.push_back(stride[i]*slice[i][2]);}
+       new_stride.push_back(stride[i]*slice[i][2]);
+       }
        index_offset += stride[i]*slice[i][0];
    }
    if(new_stride.size()!=stride.size()){
