@@ -296,21 +296,18 @@ storage storage::slice(std::vector<std::vector<int>>& slice){
    int step;
    int index_offset = 0;
    for(int i=0;i<slice.size();i++){
-       if(slice[i][0] < 0){
-            slice[i][0] = shape[i]+slice[i][0];
-       }
        if(slice[i].size() != 1){
-            if(slice[i][1] < 0){
-                 slice[i][1] = shape[i]+slice[i][1];
-       }
        if(slice[i][2] < 0){
-          index_offset += stride[i]*slice[i][1];
-          new_shape.push_back(static_cast<int>((slice[i][1]-slice[i][0]-slice[i][2]+1)/-slice[i][2])+1);
+          index_offset += stride[i]*(slice[i][1] > 0 ? slice[i][1]:shape[i]+slice[i][1]);
        }
        else{
-          index_offset += stride[i]*slice[i][0];
-          new_shape.push_back(static_cast<int>((slice[i][1]-slice[i][0]+slice[i][2]-1)/slice[i][2]));
+          index_offset += stride[i]*(slice[i][0] > 0 ? slice[i][0]:shape[i]+slice[i][0]);
        }
+       int len = 0;
+       if ((slice[i][2] > 0 && slice[i][0] < slice[i][1]) || (slice[i][2] < 0 && slice[i][0] > slice[i][1])) {
+           len = ((slice[i][1] - slice[i][0] + slice[i][2] + (slice[i][2] > 0 ? -1 : 1)) / slice[i][2]);
+       }
+       new_shape.push_back(len);
        new_stride.push_back(stride[i]*slice[i][2]);
        }
    }

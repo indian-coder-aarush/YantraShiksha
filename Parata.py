@@ -1,19 +1,6 @@
 import numpy as np
 import Tanitra
 import math
-import Ganit
-
-
-# Demo for testing Ganit.Tanitra operations
-a = Ganit.Tanitra([2,2], 4)
-b = Ganit.Tanitra([2,2], 3)
-c = Ganit.Tanitra([2,2], 2)
-f  = (a + b)
-e = a*f
-e.backward()
-a.grad().print()
-
-
 # ===== Dense Layer Base Class =====
 class Parata:
    def __init__(self, input_shape=None):
