@@ -353,10 +353,9 @@ void storage::setslice(std::vector<std::vector<int>>& slice,storage& other){
    }
    int offset_assign;
    std::vector<int> index(other.shape.size(), 0);
-   double* data_to_be_assigned = &data[index_offset];
    do{
        offset_assign = offset(new_stride, index);
-       data[offset_assign] = other.access(index);
+       data[offset_assign+index_offset] = other.access(index);
    }while(increment(index,other.shape));
 }
 
