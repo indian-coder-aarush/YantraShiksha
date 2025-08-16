@@ -122,8 +122,8 @@ void ConvolutionNode::apply(storage &grad){
    static_cast<int>((b->tensor->data.shape[0]-1)/2)+1,1},{static_cast<int>((b->tensor->data.shape[0]-1)/2),
    grad.shape[1]- static_cast<int>((b->tensor->data.shape[1]-1)/2)+1,1}};
    padded_grad.setslice(slice_vector_padded_grad,a->tensor->data);
-   std::vector<std::vector<int>> slice_vector_b = {{b->tensor->data.shape[0],-1,-1},
-   {b->tensor->data.shape[0],-1,-1}};
+   std::vector<std::vector<int>> slice_vector_b = {{b->tensor->data.shape[0]-1,-1,-1},
+   {b->tensor->data.shape[1]-1,-1,-1}};
    storage a_grad = convolution_s(padded_grad, b->tensor->data.slice(slice_vector_b), strides);
    storage b_grad = convolution_s(a->tensor->data,grad, strides);
    a->apply(a_grad);
