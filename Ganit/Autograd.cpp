@@ -125,7 +125,7 @@ void ConvolutionNode::apply(storage &grad){
    std::vector<std::vector<int>> slice_vector_b = {{b->tensor->data.shape[0]-1,-1,-1},
    {b->tensor->data.shape[1]-1,-1,-1}};
    storage flipped = b->tensor->data.copy().slice(slice_vector_b);
-   storage a_grad = convolution_s(padded_grad, flipped_b, strides);
+   storage a_grad = convolution_s(padded_grad, flipped, strides);
    storage b_grad = convolution_s(a->tensor->data,grad, strides);
    a->apply(a_grad);
    b->apply(b_grad);

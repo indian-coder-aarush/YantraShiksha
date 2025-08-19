@@ -387,4 +387,3 @@ storage convolution_s(storage a,storage b,int stride){
    }
    return output;
 }
-
