@@ -390,10 +390,10 @@ storage convolution_s(storage &a,storage &b,int stride){
 
 storage log_s(storage &a){
     storage result(a.shape,0);
-    result.strides = a.strides;
+    result.stride = a.stride;
     for(int i = 0; i < a.size; i++){
         for(int j = 1; j <= 10; j++){
-            result.data[i] += (-1)**(j+1)*(a.data[i]-1)**j/j;
+            result.data[i] += pow(-1,j+1)*pow(a.data[i]-1,j)/j;
         }
     }
     return result;
