@@ -62,5 +62,5 @@ storage s_sin(storage &a, int terms);
 storage s_cos(storage &a, int terms);
 storage s_matmul(storage &a, storage &b);
 storage convolution_s(storage &a,storage &b,int stride);
-storage log(storage &a);
+storage log_s(storage &a);
 double dot(storage &a, storage &b);

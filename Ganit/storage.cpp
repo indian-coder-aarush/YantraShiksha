@@ -388,7 +388,7 @@ storage convolution_s(storage &a,storage &b,int stride){
    return output;
 }
 
-storage log(storage &a){
+storage log_s(storage &a){
     storage result(a.shape,0);
     result.strides = a.strides;
     for(int i = 0; i < a.size; i++){

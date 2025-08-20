@@ -296,3 +296,8 @@ Tensor convolution(Tensor &a, Tensor &b, int stride){
    c.Tensor_Node = c_node;
    return c;
 }
+
+Tensor log(Tensor &a){
+    Tensor result(log_s(a.data));
+    return result;
+}
