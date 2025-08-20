@@ -360,7 +360,7 @@ void storage::setslice(std::vector<std::vector<int>>& slice,storage& other){
 }
 
 
-storage convolution_s(storage a,storage b,int stride){
+storage convolution_s(storage &a,storage &b,int stride){
    std::vector<int> output_shape = {static_cast<int>((a.shape[0]-b.shape[0])/stride)+1,
    static_cast<int>((a.shape[1]-b.shape[1])/stride)+1};
    storage output(output_shape,0);
@@ -386,4 +386,15 @@ storage convolution_s(storage a,storage b,int stride){
        start_i+=stride;
    }
    return output;
+}
+
+storage log(storage &a){
+    storage result(a.shape,0);
+    result.strides = a.strides;
+    for(int i = 0; i < a.size; i++){
+        for(int j = 1; j <= 10; j++){
+            result.data[i] += (-1)**(j+1)*(a.data[i]-1)**j/j;
+        }
+    }
+    return result;
 }
