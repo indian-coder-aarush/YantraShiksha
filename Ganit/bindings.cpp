@@ -29,5 +29,6 @@ PYBIND11_MODULE(Ganit, m) {
     .def("csc",&csc)
     .def("cot", &cot)
     .def("print",&Tensor::print)
-    .def("convolution",&convolution);
+    .def("convolution",&convolution)
+    .def("log", &log);
 }
