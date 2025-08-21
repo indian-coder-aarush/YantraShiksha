@@ -106,3 +106,9 @@ public:
    int strides;
    void apply(storage &grad) override;
 };
+
+class LogNode: public Node:{
+public:
+    std::shared_ptr<Node> a;
+    void apply(storage &grad);
+};

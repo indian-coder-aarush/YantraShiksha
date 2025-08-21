@@ -130,3 +130,8 @@ void ConvolutionNode::apply(storage &grad){
    a->apply(a_grad);
    b->apply(b_grad);
 }
+
+void LogNode::apply(storage &grad){
+    accumulate_gradient(grad);
+    a->apply(grad/a->data);
+}
