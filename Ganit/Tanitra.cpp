@@ -299,5 +299,10 @@ Tensor convolution(Tensor &a, Tensor &b, int stride){
 
 Tensor log(Tensor &a){
     Tensor result(log_s(a.data));
+    std::shared_ptr<LogNode> result_node = std::make_shared<LogNode>();
+    result_node->a = a.Tensor_Node;
+    std::shared_ptr<Tensor> tensor_result = std::make_shared<Tensor>(result);
+    result_node->tensor = tensor_result;
+    result.Tensor_Node = result_node;
     return result;
 }

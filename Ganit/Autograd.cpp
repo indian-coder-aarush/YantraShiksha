@@ -133,5 +133,5 @@ void ConvolutionNode::apply(storage &grad){
 
 void LogNode::apply(storage &grad){
     accumulate_gradient(grad);
-    a->apply(grad/a->data);
+    a->apply(grad/a->tensor->data);
 }
