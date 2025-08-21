@@ -396,11 +396,13 @@ storage log_s(storage &a){
     int k = 0;
     for(int i = 0; i < a.size; i++){
         m = a.data[i];
+        k = 0;
+        log_m = 0;
         while (1 <= m && m < 2){
             m /= 2;
             k++;
         }
-        for(int j = 1; j <= 10; j++){
+        for(int j = 1; j <= 20; j++){
             log_m += pow(-1,j+1)*pow(m-1,j)/j;
         }
         result.data[i] = log_m + k*log_2;
