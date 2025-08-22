@@ -26,16 +26,16 @@ bool increment(std::vector<int>& index,std::vector<int>& shape){
 
 
 void storage::print_data(int depth , std::vector<int> &index) {
-   std::cout << '[' << ' ';
+   std::cout << '[' << ' '<<std::flush;
    for (int i = 0; i < shape[depth]; ++i) {
        index[depth] = i;
        if (depth == shape.size() - 1) {
-           std::cout << this->access(index) << ' ';
+           std::cout << this->access(index) << ' ' <<std::flush;
        } else {
            print_data(depth + 1, index);
        }
    }
-   std::cout << ']';
+   std::cout << ']'<<std::flush;
 }
 
 
@@ -406,6 +406,16 @@ storage log_s(storage &a){
             log_m += pow(-1,j+1)*pow(m-1,j)/j;
         }
         result.data[i] = log_m + k*log_2;
+    }
+    return result;
+}
+
+storage relu(storage &a){
+    storage result = a.copy();
+    for(i = 0; i < result.size; i++){
+        if(data[i] < 0 ){
+            data[i] == 0;
+        }
     }
     return result;
 }
