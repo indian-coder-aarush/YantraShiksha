@@ -65,6 +65,7 @@ Tensor sec(Tensor &a);
 Tensor csc(Tensor &a);
 Tensor cot(Tensor &a);
 Tensor log(Tensor &a);
+Tensor relu(Tensor &a);
 
 
 void change_value(Tensor& a, py::object& slice, Tensor& replace);

@@ -410,7 +410,7 @@ storage log_s(storage &a){
     return result;
 }
 
-storage relu(storage &a){
+storage relu_s(storage &a){
     storage result = a.copy();
     for(i = 0; i < result.size; i++){
         if(data[i] < 0 ){

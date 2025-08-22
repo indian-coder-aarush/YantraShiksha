@@ -49,7 +49,7 @@ storage operator-(storage& a, storage& b);
 storage operator*(storage& a, storage& b);
 storage operator/(storage& a, storage& b);
 storage operator^(storage &a, double power);
-storage relu(storage &a);
+storage relu_s(storage &a);
 
 
 // Transpose

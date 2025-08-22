@@ -31,4 +31,5 @@ PYBIND11_MODULE(Ganit, m) {
     .def("print",&Tensor::print)
     .def("convolution",&convolution)
     .def("log", &log);
+    .def("relu", &relu);
 }

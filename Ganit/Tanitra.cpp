@@ -150,9 +150,6 @@ void Tensor::backward(){
        data.print();
    }
 
-
-
-
 // Overloaded tensor operations with autodiff
 Tensor add(Tensor &a, Tensor &b){
    Tensor c(a.data.shape, 0);
@@ -304,5 +301,10 @@ Tensor log(Tensor &a){
     std::shared_ptr<Tensor> tensor_result = std::make_shared<Tensor>(result);
     result_node->tensor = tensor_result;
     result.Tensor_Node = result_node;
+    return result;
+}
+
+Tensor relu(Tensor &a){
+    Tensor result(relu_s(a));
     return result;
 }
