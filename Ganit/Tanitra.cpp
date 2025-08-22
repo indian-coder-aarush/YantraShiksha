@@ -305,6 +305,6 @@ Tensor log(Tensor &a){
 }
 
 Tensor relu(Tensor &a){
-    Tensor result(relu_s(a));
+    Tensor result(relu_s(a.data));
     return result;
 }

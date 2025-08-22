@@ -30,6 +30,6 @@ PYBIND11_MODULE(Ganit, m) {
     .def("cot", &cot)
     .def("print",&Tensor::print)
     .def("convolution",&convolution)
-    .def("log", &log);
+    .def("log", &log)
     .def("relu", &relu);
 }
