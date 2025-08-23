@@ -135,3 +135,12 @@ void LogNode::apply(storage &grad){
     accumulate_gradient(grad);
     a->apply(grad/a->tensor->data);
 }
+
+void ReluNode::apply(storage &grad){
+    accumulate_gradient(grad);
+    storage a_grad(a->tensor->data.shape)
+    for(i = 0; i < result.size();i++){
+        a->tensor->data.data[i] < 0 ? a->tensor->data.data[i] = 0 : a->tensor->data.data[i] = 1;
+    }
+    a->apply(grad*a_grad);
+}
