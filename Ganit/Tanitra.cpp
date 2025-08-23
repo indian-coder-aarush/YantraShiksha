@@ -306,5 +306,10 @@ Tensor log(Tensor &a){
 
 Tensor relu(Tensor &a){
     Tensor result(relu_s(a.data));
+    std::shared_ptr<ReluNode> result_node = std::make_shared<ReluNode>();
+    result_node->a = a.Tensor_Node;
+    std::shared_ptr<Tensor> tensor_result = std::make_shared<Tensor>(result);
+    result_node->tensor = tensor_result;
+    result.Tensor_Node = result_node;
     return result;
 }
