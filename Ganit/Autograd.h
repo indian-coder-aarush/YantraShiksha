@@ -112,3 +112,9 @@ public:
     std::shared_ptr<Node> a;
     void apply(storage &grad);
 };
+
+class ReluNode: public Node{
+public:
+    std::shared_ptr<Node> a;
+    void apply(storage &grad);
+}
