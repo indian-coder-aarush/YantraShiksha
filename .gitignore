@@ -3,3 +3,5 @@ __pycache__/
 .\venv
 build/
 trial.py
+CMakeLists.txt
+.cmake-build-debug/

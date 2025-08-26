@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.signal import convolve2d
 
-
 # Main autodiff class representing tensors with gradient tracking
 class Tanitra:
 
