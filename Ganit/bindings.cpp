@@ -19,7 +19,8 @@ PYBIND11_MODULE(Ganit, m) {
         .def("__truediv__",&division)
         .def("__mul__",&mul)
         .def("__matmul__",&matmul)
-        .def("T",&T);
+        .def("T",&T)
+        .def("__str__",&Tensor::print);
 
 
     m.def("sin",&sin)
@@ -28,7 +29,6 @@ PYBIND11_MODULE(Ganit, m) {
     .def("sec",&sec)
     .def("csc",&csc)
     .def("cot", &cot)
-    .def("print",&Tensor::print)
     .def("convolution",&convolution)
     .def("log", &log)
     .def("relu", &relu);

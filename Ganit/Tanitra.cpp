@@ -146,8 +146,9 @@ void Tensor::backward(){
 
 
    // Print tensor
-   void Tensor::print() {
+   std::string Tensor::print() {
        data.print();
+       return "";
    }
 
 // Overloaded tensor operations with autodiff
