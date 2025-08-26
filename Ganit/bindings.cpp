@@ -13,7 +13,7 @@ PYBIND11_MODULE(Ganit, m) {
         .def("__setitem__", &change_value)
         .def("reshape",&reshape)
         .def("backward",py::overload_cast<>(&Tensor::backward))
-        .def("grad",&Tensor::grad)
+        .def_property_readonly("grad",&Tensor::grad)
         .def("__add__",&add)
         .def("__sub__", &sub)
         .def("__truediv__",&division)
