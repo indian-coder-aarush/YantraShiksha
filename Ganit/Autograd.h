@@ -110,11 +110,11 @@ public:
 class LogNode: public Node{
 public:
     std::shared_ptr<Node> a;
-    void apply(storage &grad);
+    void apply(storage &grad) override;
 };
 
 class ReluNode: public Node{
 public:
     std::shared_ptr<Node> a;
-    void apply(storage &grad);
+    void apply(storage &grad) override;
 };
