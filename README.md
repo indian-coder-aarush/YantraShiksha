@@ -54,8 +54,7 @@ python setup.py build_ext --inplace
 
 ```python
 import Tanitra
-import Parata
-import Pratirup
+from DeepLeaning import Parata, Pratirup
 
 # Build a simple feedforward network
 model = Pratirup.AnukramikPratirup([
@@ -66,6 +65,7 @@ model = Pratirup.AnukramikPratirup([
 
 # Dummy data
 import numpy as np
+
 X = Tanitra.Tanitra(np.random.randn(100, 2))
 y = Tanitra.Tanitra(np.random.randint(0, 1, (100, 1)))
 
