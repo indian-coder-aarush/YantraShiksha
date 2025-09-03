@@ -35,7 +35,7 @@ Copy these files to your project:
 #### Method 2: Build Custom Binary
 For different platforms/Python versions:
 ```bash
-# Copy Ganit/ directory to your project
+# Copy Math/ directory to your project
 pip install pybind11 numpy
 python setup.py build_ext --inplace
 # Copy generated .pyd/.so file to your project
@@ -87,7 +87,7 @@ model.learn(X, y, epochs=100, lr=0.1)
 - Activation functions: `sigmoid`, `relu`, `tanh`, `softmax`, etc.
 - Utility functions: `mean`, `square`, `convolution2d`, `pooling2d`, etc.
 
-#### ⚡ Ganit: High-Performance C++ Tensor Core
+#### ⚡ Math: High-Performance C++ Tensor Core
 
 The tensor operations are being migrated to a high-performance C++ implementation exposed via pybind11 bindings. This provides:
 
@@ -96,14 +96,14 @@ The tensor operations are being migrated to a high-performance C++ implementatio
 - **Extensibility**: Easy to add new operations in C++
 - **API Consistency**: Same Python interface with improved performance
 
-##### Current Ganit API (Work in Progress)
+##### Current Math API (Work in Progress)
 
 ```python
-import Ganit
+import Math
 
 # Create tensors
-a = Ganit.Tanitra([1, 2, 3, 4])
-b = Ganit.Tanitra([[1, 2], [3, 4]])
+a = Math.Tanitra([1, 2, 3, 4])
+b = Math.Tanitra([[1, 2], [3, 4]])
 
 # Basic operations
 c = a + b
@@ -115,40 +115,39 @@ e.backward()
 grad = e.grad()
 
 # Trigonometric functions
-f = Ganit.sin(a)
-g = Ganit.cos(a)
-h = Ganit.tan(a)
+f = Math.sin(a)
+g = Math.cos(a)
+h = Math.tan(a)
 
 # Utility functions
 reshaped = a.reshape([2, 2])
 transposed = a.T()
-conv_result = Ganit.convolution(a, b, stride=1)
+conv_result = Math.convolution(a, b, stride=1)
 ```
 
-> **Note**: The Ganit API is actively being developed and will have improved functionality and performance in future releases.
+> **Note**: The Math API is actively being developed and will have improved functionality and performance in future releases.
 
 #### 🏗️ Layers
 
-- `PraveshParata`: Input layer
-- `GuptaParata`: Dense (fully connected) layer with activations
-- `NirgamParata`: Output layer
-- `Samasuchaka`: Normalization (z-score, min-max)
-- `ConvLayer2D`: 2D convolutional layer
-- `MaxPoolingLayer2D`: 2D max pooling
+- `Input`: Input layer
+- `Dense`: Dense (fully connected) layer with activations
+- `Mormalization`: Normalization (z-score, min-max)
+- `Conv2D`: 2D convolutional layer
+- `MaxPooling2D`: 2D max pooling
 - `LSTM`: Long Short-Term Memory block
 - `SelfAttention`, `MultiHeadedAttention`, `PositionalEncoding`: Transformer components
 
 #### 🤖 Models
 
-- `AnukramikPratirup`: Sequential model API
-- `ShabdAyamahPratirup`: Word embedding model (CBOW, skip-gram)
+- `Sequential`: Sequential model API
+- `Word2Vec`: Word embedding model (CBOW, skip-gram)
 
 ---
 
 ## 🔧 Advanced Features
 
 - **Custom Backpropagation**: Easily define new operations and their gradients
-- **Extensible Layers**: Add your own layers by subclassing `Parata`
+- **Extensible Layers**: Add your own layers by subclassing `Layer`
 - **Transformer Support**: Build transformer models with attention and positional encoding
 - **High-Performance C++ Backend**: Ganit tensor core for optimized operations
 
@@ -161,7 +160,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgements
 
 - Inspired by PyTorch, TensorFlow, and the spirit of open-source learning
-- Sanskrit-inspired naming for educational and cultural flavor
 
 ## 🤝 Contributing
 

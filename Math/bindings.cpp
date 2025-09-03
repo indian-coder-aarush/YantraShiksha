@@ -6,7 +6,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(Ganit, m) {
+PYBIND11_MODULE(Math, m) {
     pybind11::class_<Tensor>(m, "Tensor")
         .def(pybind11::init<py::list&>())
         .def("__getitem__", &Tensor::access)

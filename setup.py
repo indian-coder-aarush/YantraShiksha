@@ -3,8 +3,8 @@ import pybind11
 
 ext_modules = [
     Extension(
-        'Ganit',                # Module name
-        ['Ganit/bindings.cpp','Ganit/storage.cpp','Ganit/Tensor.cpp','Ganit/Autograd.cpp'
+        'Math',                # Module name
+        ['Math/bindings.cpp','Math/storage.cpp','Math/Tensor.cpp','Math/Autograd.cpp'
          ],          # Source files
         include_dirs=[pybind11.get_include()],  # Include pybind11 headers
         language='c++'
@@ -12,7 +12,7 @@ ext_modules = [
 ]
 
 setup(
-    name='Ganit',
+    name='Math',
     ext_modules=ext_modules,
     zip_safe=False,
 )
