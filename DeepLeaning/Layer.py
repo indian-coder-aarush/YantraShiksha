@@ -9,7 +9,7 @@ class Layer:
        self.output_shape = None
 
 
-   def forward(self):
+   def forward(self, input):
        raise NotImplementedError
 
 
@@ -63,19 +63,11 @@ class Dense:
 
        output = input @ self.params['weights'] + self.params['biases']
 
+class Relu(Layer):
 
-       # Apply activation function
-       if self.activation == 'relu':
-           output = Tanitra.relu(output)
-       elif self.activation == 'sigmoid':
-           output = Tanitra.sigmoid(output)
-       elif self.activation == 'linear':
-           pass
-       elif self.activation == 'softmax':
-           output = Tanitra.softmax(output)
-       else:
-           raise RuntimeError("Invalid activation function")
-       return output
+    def forward(self,input):
+        return Tanitra.relu(input)
+
 
 # ===== Normalization Layer =====
 class Normalization:
