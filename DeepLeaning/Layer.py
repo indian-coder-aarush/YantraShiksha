@@ -2,7 +2,7 @@ import numpy as np
 import Tanitra
 import math
 # ===== Dense Layer Base Class =====
-class Parata:
+class Layer:
    def __init__(self, input_shape=None):
        self.params = {}
        self.input_shape = input_shape
@@ -14,7 +14,7 @@ class Parata:
 
 
 # ===== Input Layer =====
-class PraveshParata:
+class Input:
    def __init__(self, input_shape):
        self.input_shape = input_shape
        self.output_shape = input_shape
@@ -29,7 +29,7 @@ class PraveshParata:
 
 
 # ===== Dense Hidden Layer (GuptaParata) =====
-class GuptaParata:
+class Dense:
    def __init__(self, n_neurons, activation, input_shape=None):
        if isinstance(n_neurons, tuple):
            raise ValueError("Only 1D output is allowed.")
@@ -77,15 +77,8 @@ class GuptaParata:
            raise RuntimeError("Invalid activation function")
        return output
 
-
-# ===== Output Layer (NirgamParata) =====
-class NirgamParata(GuptaParata):
-   # Inherits everything from GuptaParata
-   pass
-
-
 # ===== Normalization Layer =====
-class Samasuchaka:
+class Normalization:
    def __init__(self, normalization_type):
        self.normalization = normalization_type
        if self.normalization == 'z-score':
@@ -115,7 +108,7 @@ class Samasuchaka:
 
 
 # ===== Convolution Layer =====
-class ConvLayer2D:
+class Conv2D:
    def __init__(self, stride, filters, channels, kernel_size, activation,
                 input_shape=None, padding_constant=0, padding_mode=None, padding_width=0):
        self.stride = stride
@@ -166,7 +159,7 @@ class ConvLayer2D:
 
 
 # ===== MaxPooling Layer =====
-class MaxPoolingLayer2D:
+class MaxPooling2D:
    def __init__(self, stride, pool_window, channels, padding_mode=None, pad_width=0, pad_constants=0, input_shape=None):
        self.stride = stride
        self.pool_window = pool_window

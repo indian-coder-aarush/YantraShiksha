@@ -1,11 +1,11 @@
 import Tanitra
 import numpy as np
 import matplotlib.pyplot as plt
-import Parata
+import Layer
 
 
 # Sequential Model Class
-class AnukramikPratirup:
+class Sequential:
     def __init__(self, layers=None):
         self.layers = []
         if not layers is None:
@@ -66,7 +66,7 @@ class AnukramikPratirup:
 
 
 # Word Embedding Model
-class ShabdAyamahPratirup:
+class Word2Vec:
     def __init__(self, embedding_dimension, method):
         self.vocabulary = 0
         self.token_list = {}  # maps word to index
@@ -75,7 +75,7 @@ class ShabdAyamahPratirup:
         self.sentences = []
         self.sentence_indices = []
         self.params = {}
-        self.layers = [Parata.GuptaParata(self.embedding_dimension, 'linear')]
+        self.layers = [Layer.Dense(self.embedding_dimension, 'linear')]
         self.params_initialized = False
         self.grad = {}
 
@@ -155,7 +155,7 @@ class ShabdAyamahPratirup:
             for i in sentences:
                 self.sentence_indices.append(i)
 
-        self.layers.append(Parata.GuptaParata(self.vocabulary, 'softmax'))
+        self.layers.append(Layer.Dense(self.vocabulary, 'softmax'))
 
         training_data_x = []
         training_data_y = []

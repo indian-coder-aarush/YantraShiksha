@@ -54,7 +54,7 @@ python setup.py build_ext --inplace
 
 ```python
 import Tanitra
-from DeepLeaning import Parata, Pratirup
+from DeepLeaning import Layer, Pratirup
 
 # Build a simple feedforward network
 model = Pratirup.AnukramikPratirup([
