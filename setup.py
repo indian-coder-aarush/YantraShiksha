@@ -4,7 +4,7 @@ import pybind11
 ext_modules = [
     Extension(
         'Ganit',                # Module name
-        ['Ganit/bindings.cpp','Ganit/storage.cpp','Ganit/Tanitra.cpp','Ganit/Autograd.cpp'
+        ['Ganit/bindings.cpp','Ganit/storage.cpp','Ganit/Tensor.cpp','Ganit/Autograd.cpp'
          ],          # Source files
         include_dirs=[pybind11.get_include()],  # Include pybind11 headers
         language='c++'

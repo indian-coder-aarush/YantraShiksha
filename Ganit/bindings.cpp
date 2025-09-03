@@ -2,12 +2,12 @@
 #include <pybind11/stl.h>
 #include "storage.h"
 #include "Autograd.h"
-#include "Tanitra.h"
+#include "Tensor.h"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(Ganit, m) {
-    pybind11::class_<Tensor>(m, "Tanitra")
+    pybind11::class_<Tensor>(m, "Tensor")
         .def(pybind11::init<py::list&>())
         .def("__getitem__", &Tensor::access)
         .def("__setitem__", &change_value)

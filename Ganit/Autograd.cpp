@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 #include"storage.h"
-#include "Tanitra.h"
+#include "Tensor.h"
 #include "Autograd.h"
 
 

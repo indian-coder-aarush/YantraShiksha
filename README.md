@@ -54,13 +54,13 @@ python setup.py build_ext --inplace
 
 ```python
 import Tanitra
-from DeepLeaning import Layer, Pratirup
+from DeepLeaning import Layer, Model
 
 # Build a simple feedforward network
-model = Pratirup.AnukramikPratirup([
-    Parata.PraveshParata((2,)),
-    Parata.GuptaParata(8, 'sigmoid'),
-    Parata.NirgamParata(1, 'relu')
+model = Model.Sequential([
+    Layer.Dense((2,), 'linear'),
+    Layer.Dense(8, 'sigmoid'),
+    Layer.Dense(1, 'relu')
 ])
 
 # Dummy data

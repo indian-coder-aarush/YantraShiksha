@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include "storage.h"
-#include "Tanitra.h"
+#include "Tensor.h"
 
 
 class Tensor;

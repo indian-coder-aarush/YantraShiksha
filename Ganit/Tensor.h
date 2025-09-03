@@ -7,7 +7,7 @@
 #include <pybind11/stl.h>
 #include "storage.h"
 #include "Autograd.h"
-#include "Tanitra.h"
+#include "Tensor.h"
 
 
 namespace py = pybind11;
