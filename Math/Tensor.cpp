@@ -97,13 +97,14 @@ void Tensor::backward(){
    }
 
     Tensor::Tensor(py::array_t<double>& array):Tensor_Node(std::make_shared<Node>()){
-        py::buffer_info buffer = array.request();
+        auto buffer = array.request();
         std::vector<int> shape;
-        for (ssize_t i = 0; i < buffer.ndim; i++) {
+        int dimension = static_cast<int>(buffer.ndim);
+        for (int i = 0; i < dimension; i++) {
             shape.push_back(static_cast<int>(buffer.shape[i]));
         }
         int size = static_cast<int>(buffer.size);
-        double* data = static_cast<double*>(buffer);
+        double* data = static_cast<double*>(buffer.ptr);
     }
 
    // Access and modify elements

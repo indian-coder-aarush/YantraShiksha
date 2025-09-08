@@ -5,6 +5,7 @@
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include "storage.h"
 #include "Autograd.h"
 #include "Tensor.h"
@@ -32,6 +33,7 @@ public:
    Tensor(storage &other);
    Tensor(std::vector<int> &dim, double default_value);
    Tensor(pybind11::list &list);
+   Tensor(py::array_t<double>& array);
 
 
    // Autograd
