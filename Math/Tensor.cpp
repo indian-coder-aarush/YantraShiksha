@@ -3,7 +3,7 @@
 #include <cmath>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
+#include <pybind11/numpy.h>
 #include "Tensor.h"
 #include "Autograd.h"
 #include "storage.h"
@@ -96,6 +96,15 @@ void Tensor::backward(){
        Tensor_Node->tensor = std::make_shared<Tensor>(*this);
    }
 
+    Tensor::Tensor(py::array_t<double>& array):Tensor_Node(std::make_shared<Node>()){
+        py::buffer_info buffer = array.request();
+        std::vector<int> shape;
+        for (ssize_t i = 0; i < buffer.ndim; i++) {
+            shape.push_back(static_cast<int>(buffer.shape[i]));
+        }
+        int size = static_cast<int>(buffer.size);
+        double* data = static_cast<double*>(buffer);
+    }
 
    // Access and modify elements
    Tensor Tensor::access(py::object& slice) {
