@@ -104,7 +104,10 @@ void Tensor::backward(){
             shape.push_back(static_cast<int>(buffer.shape[i]));
         }
         int size = static_cast<int>(buffer.size);
-        double* data = static_cast<double*>(buffer.ptr);
+        double* data_ptr = static_cast<double*>(buffer.ptr);
+        data.size = size;
+        data.shape = shape;
+        data.data = data_ptr;
     }
 
    // Access and modify elements
