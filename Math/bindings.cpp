@@ -9,6 +9,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(Math, m) {
     pybind11::class_<Tensor>(m, "Tensor")
         .def(pybind11::init<py::list&>())
+        .def(pybind11::init<py::array_t<double>&>())
         .def("__getitem__", &Tensor::access)
         .def("__setitem__", &change_value)
         .def("reshape",&reshape)
