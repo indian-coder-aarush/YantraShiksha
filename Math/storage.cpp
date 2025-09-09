@@ -135,6 +135,7 @@ double storage::access(const std::vector<int> &indices) {
 
 
    void storage::print() {
+
        std::vector<int> a(shape.size(),0);
        print_data(0,a);
    }
