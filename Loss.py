@@ -1,4 +1,4 @@
-import Ganit
+import Math
 
 class MSE:
 
