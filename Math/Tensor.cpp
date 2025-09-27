@@ -112,7 +112,7 @@ Tensor::Tensor(py::array_t<double> &array) : Tensor_Node(std::make_shared<Node>(
     double *buffer_data_ptr = static_cast<double *>(buffer.ptr);
     double *data_ptr = new double[size];
     for (int i = 0; i < size; i++) {
-        data_ptr[i] = buffer_data_ptr[i];
+        data_ptr[i] = static_cast<double>(buffer_data_ptr[i]);
     }
     for (int i = 0; i < dimension; i++) {
         strides.push_back(static_cast<int>(buffer.strides[i]) / 8);
@@ -121,6 +121,7 @@ Tensor::Tensor(py::array_t<double> &array) : Tensor_Node(std::make_shared<Node>(
     data.shape = shape;
     data.data = data_ptr;
     data.stride = strides;
+    Tensor_Node->tensor = std::make_shared<Tensor>(*this);
 }
 
 // Access and modify elements

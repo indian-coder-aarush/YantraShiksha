@@ -122,9 +122,8 @@ void ConvolutionNode::apply(storage &grad) {
     storage padded_grad({grad.shape[0] + b->tensor->data.shape[0], grad.shape[1] + b->tensor->data.shape[1]}, 0);
     std::vector<std::vector<int> > slice_vector_padded_grad = {
         {
-            static_cast<int>(b->tensor->data.shape[0] / 2), grad.shape[0] -
-                                                            static_cast<int>((b->tensor->data.shape[0] - 1) / 2) + 1,
-            1
+            static_cast<int>(b->tensor->data.shape[0] / 2),
+            grad.shape[0] -static_cast<int>((b->tensor->data.shape[0] - 1) / 2) + 1, 1
         },
         {
             static_cast<int>((b->tensor->data.shape[1]) / 2),
