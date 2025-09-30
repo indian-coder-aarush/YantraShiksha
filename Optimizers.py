@@ -1,4 +1,5 @@
 import Math
+import numpy as np
 
 class GradientDescent:
 
@@ -9,4 +10,4 @@ class GradientDescent:
     def step(self):
         for param_key in self.params:
             if self.params[param_key].grad is not None:
-                self.params[param_key] -= self.learning_rate * self.params[param_key].grad
+                self.params[param_key] -= Math.Tensor(np.full(self.params[param_key].shape(),self.learning_rate)) * self.params[param_key].grad
