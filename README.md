@@ -12,11 +12,11 @@ YantraShiksha provides a full stack for building, training, and experimenting wi
 
 - 🚀 **Autograd Engine**: Automatic differentiation for tensor operations, supporting gradients for all core mathematical operations and custom layers
 - 📊 **Tensor Library (`Tanitra`)**: Numpy-based tensor class with support for broadcasting, slicing, matrix multiplication, and a variety of activation and utility functions
-- 🏗️ **Layer API (`Parata`)**: Modular layer classes including dense, input, output, normalization, convolutional, pooling, LSTM, and transformer components
-- 🤖 **Model API (`Pratirup`)**: Sequential and word embedding models, with easy-to-use training loops and support for custom optimizers
+- 🏗️ **Layer API (`Layer`)**: Modular layer classes including dense, input, output, normalization, convolutional, pooling, LSTM, and transformer components
+- 🤖 **Model API (`Model`)**: Sequential and word embedding models, with easy-to-use training loops and support for custom optimizers
 - 🔄 **Transformer Support**: Self-attention, multi-headed attention, and positional encoding layers for building transformer architectures
 - 📚 **Educational Focus**: Clear, readable code with a focus on learning and experimentation
-- ⚡ **High-Performance C++ Backend**: Ganit tensor core for optimized operations
+- ⚡ **High-Performance C++ Backend**: Math tensor core for optimized operations
 
 ---
 
@@ -28,9 +28,8 @@ YantraShiksha provides a full stack for building, training, and experimenting wi
 #### Method 1: Direct File Inclusion (Recommended)
 Copy these files to your project:
 - `Tanitra.py` - Python tensor implementation
-- `Parata.py` - Layer definitions  
-- `Pratirup.py` - Model APIs
-- `Ganit.cp313-win_amd64.pyd` - Pre-compiled C++ tensor core
+- `DeepLearning` - A directory of deep learning files like Layer.py and Model.py
+- `Math.cp313-win_amd64.pyd` - Pre-compiled C++ tensor core
 
 #### Method 2: Build Custom Binary
 For different platforms/Python versions:
@@ -96,14 +95,14 @@ The tensor operations are being migrated to a high-performance C++ implementatio
 - **Extensibility**: Easy to add new operations in C++
 - **API Consistency**: Same Python interface with improved performance
 
-##### Current Math API (Work in Progress)
+##### Math API 
 
 ```python
 import Math
 
 # Create tensors
-a = Math.Tanitra([1, 2, 3, 4])
-b = Math.Tanitra([[1, 2], [3, 4]])
+a = Math.Tensor([1, 2, 3, 4])
+b = Math.Tensor([[1, 2], [3, 4]])
 
 # Basic operations
 c = a + b
@@ -112,7 +111,7 @@ e = a @ b  # matrix multiplication
 
 # Autograd
 e.backward()
-grad = e.grad()
+grad = e.grad
 
 # Trigonometric functions
 f = Math.sin(a)
@@ -125,7 +124,7 @@ transposed = a.T()
 conv_result = Math.convolution(a, b, stride=1)
 ```
 
-> **Note**: The Math API is actively being developed and will have improved functionality and performance in future releases.
+> **Note**: The Math API is actively being developed and will have improved functionality and performance in future releases. More functions are coming soon
 
 #### 🏗️ Layers
 
