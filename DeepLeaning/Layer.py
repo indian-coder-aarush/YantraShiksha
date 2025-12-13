@@ -166,14 +166,12 @@ class MaxPooling2D:
    def forward(self, X):
        if X.shape[0] != self.channels:
            raise ValueError("Channel mismatch")
-       output = Tanitra.Tanitra([])
+       output = Tanitra.Tanitra(np.zeros((self.channels, self.pool_window, self.pool_window)))
        if not self.input_output_learned:
            self.input_shape = X.shape
            self.input_output_learned = True
        for j in range(self.channels):
-           output = output.append(
-               Tanitra.pooling2d(X[j], self.pool_window, self.stride,
-                                 self.padding, self.pad_width, self.pad_constants))
+           output[j] = Tanitra.pooling2d(X[j], self.pool_window, self.stride, self.padding, self.pad_width, self.pad_constants)
        return output
 
 
