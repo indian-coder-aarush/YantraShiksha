@@ -96,7 +96,7 @@ class Tanitra:
        self.data[index] = value.data
        if self.track_gradient:
            def gradn(grad):
-               return grad
+               return grad[index]
            self.parents.append((value,gradn))
 
    # Append another tensor along a specified axis (in-place)
