@@ -99,13 +99,6 @@ class Tanitra:
                return grad[index]
            self.parents.append((value,gradn))
 
-   # Append another tensor along a specified axis (in-place)
-   def add(self,object,axis = 0):
-       if not isinstance(object,Tanitra):
-           object = Tanitra(object)
-       self.data = np.append(self.data,object.data,axis = axis)
-
-
    # Flatten the tensor (preserves shape info for backprop)
    def flatten(self):
        new_tanitra = Tanitra(self.data.flatten())
@@ -122,23 +115,6 @@ class Tanitra:
        new_Tanitra.parents.append((a,lambda g: g*self.data))
        new_Tanitra.parents.append((self, lambda g: g * a))
        return new_Tanitra
-
-
-   # Append data as nested list (unusual behavior, be cautious)
-   def append(self,other):
-       if not isinstance(other,Tanitra):
-           other = Tanitra(other)
-       self_list = self.data.tolist()
-       length = len(self_list)
-       other_list = other.data.tolist()
-       self_list.append(other_list)
-       new_tanitra = Tanitra(self_list)
-       self.data = np.array(self_list)
-       if self.track_gradient or other.track_gradient:
-           new_tanitra.parents.append((self,lambda g: g[:length]))
-           new_tanitra.parents.append((other,lambda g: g[-1]))
-       return new_tanitra
-
 
    # Backward pass to compute gradients
    def backward(self,grad=None):
