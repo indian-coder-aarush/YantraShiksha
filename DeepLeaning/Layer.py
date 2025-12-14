@@ -119,12 +119,11 @@ class Conv2D:
    def forward(self, X):
        if X.shape[0] != self.channels:
            raise ValueError("Channel mismatch")
-       output = Tanitra.Tanitra([])
        if not self.input_output_learned:
            self.input_shape = X.shape
            self.output = (self.filters,
-                          (self.input_shape[1] - self.kernel_size) // self.stride + 1,
-                          (self.input_shape[2] - self.kernel_size) // self.stride + 1)
+                          (self.input_shape[1] + self.padding_width - self.kernel_size) // self.stride + 1,
+                          (self.input_shape[2] + self.padding_width - self.kernel_size) // self.stride + 1)
            for i in range(self.filters):
                self.params['kernels' + str(i)] = Tanitra.Tanitra(
                    np.random.randn(self.channels, self.kernel_size, self.kernel_size) /
@@ -132,14 +131,14 @@ class Conv2D:
                )
            self.input_output_learned = True
 
-
+       output = Tanitra.Tanitra(np.zeros(*self.output))
        for i in range(self.filters):
            feature_map = Tanitra.Tanitra(0)
            for j in range(self.channels):
                feature_map += Tanitra.convolution2d(
                    X[j], self.params['kernels' + str(i)][j],
                    self.stride, self.padding, self.padding_width, self.padding_constant)
-           output = output.append(feature_map)
+           output[i] = feature_map
 
 
        # Apply activation
@@ -161,15 +160,19 @@ class MaxPooling2D:
        self.pad_constants = pad_constants
        self.input_output_learned = False
        self.input_shape = None
+       self.output = None
 
 
    def forward(self, X):
        if X.shape[0] != self.channels:
            raise ValueError("Channel mismatch")
-       output = Tanitra.Tanitra(np.zeros((self.channels, self.pool_window, self.pool_window)))
        if not self.input_output_learned:
            self.input_shape = X.shape
            self.input_output_learned = True
+           self.output = (self.channels,
+                          (self.input_shape[1] + self.pad_width - self.pool_window) // self.stride + 1,
+                          (self.input_shape[2] + self.pad_width - self.pool_window) // self.stride + 1)
+       output = Tanitra.Tanitra(np.zeros(*self.output))
        for j in range(self.channels):
            output[j] = Tanitra.pooling2d(X[j], self.pool_window, self.stride, self.padding, self.pad_width, self.pad_constants)
        return output
