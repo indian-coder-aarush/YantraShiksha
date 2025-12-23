@@ -391,6 +391,35 @@ storage convolution_s(storage &a, storage &b, int stride) {
     return output;
 }
 
+storage max_pooling_s(storage &a, int window_size, int stride) {
+    std::vector<int> output_shape = {
+        static_cast<int>((a.shape[0] - window_size) / stride) + 1,
+        static_cast<int>((a.shape[1] - window_size) / stride) + 1
+    };
+    storage output(output_shape, 0);
+    double value_i_j = 0;
+    int start_i = 0;
+    int start_j = 0;
+    std::vector<std::vector<int> > slice;
+    for (int i = 0; i < output.shape[0]; i++) {
+        start_j = 0;
+        for (int j = 0; j < output.shape[1]; j++) {
+            value_i_j = window.data[0];
+            slice = {{start_i, start_i + window_size, 1}, {start_j, start_j + window_size, 1}};
+            for (int k = 0; k < slice.shape[0]; k++) {
+                for (int l = 0; l < slice.shape[1]; l++) {
+                    current_num = window.data[k * window.stride[0] + l]
+                    value_i_j += (current_num >  value_i_j ? current_num : value_i_j);
+                }
+            }
+            output.data[i * output.stride[0] + j] = value_i_j;
+            start_j += stride;
+        }
+        start_i += stride;
+    }
+    return output;
+}
+
 storage log_s(storage &a) {
     storage result(a.shape, 0);
     double log_2 = 0.69314718056;
