@@ -21,7 +21,8 @@ PYBIND11_MODULE(Math, m) {
             .def("__mul__", &mul)
             .def("__matmul__", &matmul)
             .def("T", &T)
-            .def("__str__", &Tensor::print);
+            .def("__str__", &Tensor::print)
+            .def("zero_grad", &Tensor::zero_grad);
 
 
     m.def("sin", &sin)

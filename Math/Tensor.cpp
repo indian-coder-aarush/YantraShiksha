@@ -64,6 +64,11 @@ void Tensor::backward() {
 }
 
 
+void Tensor::zero_grad() {
+    storage zero_gradient(data.shape, 1);
+    this->Tensor_Node->gradient = zero_gradient;
+}
+
 // Get gradient Tensor
 Tensor Tensor::grad() {
     return Tensor(Tensor_Node->gradient);
