@@ -134,3 +134,10 @@ public:
 
     void apply(storage &grad) override;
 };
+
+class MaxPoolNode : public Node {
+public:
+    std::shared_ptr<Node> a;
+
+    void apply(storage &grad) override;
+}
