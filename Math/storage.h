@@ -49,13 +49,13 @@ public:
 
 
 // Element-wise binary operations
-storage operator+(storage &a, storage &b);
+storage operator+(const storage &a, const storage &b);
 
-storage operator-(storage &a, storage &b);
+storage operator-(const storage &a, const storage &b);
 
-storage operator*(storage &a, storage &b);
+storage operator*(const storage &a, const storage &b);
 
-storage operator/(storage &a, storage &b);
+storage operator/(const storage &a, const storage &b);
 
 storage operator^(storage &a, double power);
 
@@ -69,16 +69,16 @@ storage T_s(storage &a, std::vector<int> &order);
 
 
 // Other operations
-storage sqrt(storage &a);
+storage sqrt(const storage &a);
 
-storage s_sin(storage &a, int terms);
+storage s_sin(const storage &a, int terms);
 
-storage s_cos(storage &a, int terms);
+storage s_cos(const storage &a, int terms);
 
-storage s_matmul(storage &a, storage &b);
+storage s_matmul(const storage &a, const storage &b);
 
-storage convolution_s(storage &a, storage &b, int stride);
+storage convolution_s(const storage &a, const storage &b, int stride);
 
-storage log_s(storage &a);
+storage log_s(const storage &a);
 
-double dot(storage &a, storage &b);
+double dot(const storage &a, const storage &b);

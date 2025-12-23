@@ -10,12 +10,12 @@ Node::Node() {
 }
 
 
-void Node::apply(storage &grad) {
+void Node::apply(const storage &grad) {
     accumulate_gradient(grad);
 }
 
 
-void Node::accumulate_gradient(storage &grad) {
+void Node::accumulate_gradient(const storage &grad) {
     if (gradient.data == nullptr) {
         gradient = grad;
     } else {
@@ -24,14 +24,14 @@ void Node::accumulate_gradient(storage &grad) {
 }
 
 
-void AddNode::apply(storage &grad) {
+void AddNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     a->apply(grad);
     b->apply(grad);
 }
 
 
-void SubNode::apply(storage &grad) {
+void SubNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     a->apply(grad);
     storage minus_ones(grad.shape, -1);
@@ -40,7 +40,7 @@ void SubNode::apply(storage &grad) {
 }
 
 
-void MulNode::apply(storage &grad) {
+void MulNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage grad_a = b->tensor->data * grad;
     storage grad_b = a->tensor->data * grad;
@@ -49,7 +49,7 @@ void MulNode::apply(storage &grad) {
 }
 
 
-void DivNode::apply(storage &grad) {
+void DivNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage minus_ones(grad.shape, -1);
     storage grad_a = grad / b->tensor->data;
@@ -59,14 +59,14 @@ void DivNode::apply(storage &grad) {
 }
 
 
-void SinNode::apply(storage &grad) {
+void SinNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage grad_a = s_cos(a->tensor->data, 10) * grad;
     a->apply(grad_a);
 }
 
 
-void CosNode::apply(storage &grad) {
+void CosNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage minus_ones(grad.shape, -1);
     storage grad_a = s_sin(a->tensor->data, 10) * grad * minus_ones;
@@ -74,14 +74,14 @@ void CosNode::apply(storage &grad) {
 }
 
 
-void ReshapeNode::apply(storage &grad) {
+void ReshapeNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     grad.shape = initial_shape;
     a->apply(grad);
 }
 
 
-void MatmulNode::apply(storage &grad) {
+void MatmulNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage grad_a = s_matmul(grad, T_s(b->tensor->data));
     storage grad_b = s_matmul(T_s(a->tensor->data), grad);
@@ -90,14 +90,14 @@ void MatmulNode::apply(storage &grad) {
 }
 
 
-void TNode::apply(storage &grad) {
+void TNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage grad_a = T_s(grad);
     a->apply(grad_a);
 }
 
 
-void SetItemNode::apply(storage &grad) {
+void SetItemNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage grad_a = grad.slice(slice);
     grad_a = grad_a.copy();
@@ -108,7 +108,7 @@ void SetItemNode::apply(storage &grad) {
 }
 
 
-void GetItemNode::apply(storage &grad) {
+void GetItemNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage zeros(a->tensor->data.shape, 0);
     zeros.setslice(slice, grad);
@@ -117,7 +117,7 @@ void GetItemNode::apply(storage &grad) {
 }
 
 
-void ConvolutionNode::apply(storage &grad) {
+void ConvolutionNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     storage padded_grad({grad.shape[0] + b->tensor->data.shape[0], grad.shape[1] + b->tensor->data.shape[1]}, 0);
     std::vector<std::vector<int> > slice_vector_padded_grad = {
@@ -142,12 +142,12 @@ void ConvolutionNode::apply(storage &grad) {
     b->apply(b_grad);
 }
 
-void LogNode::apply(storage &grad) {
+void LogNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     a->apply(grad / a->tensor->data);
 }
 
-void ReluNode::apply(storage &grad) {
+void ReluNode::apply(const storage &grad) {
     accumulate_gradient(grad);
     for (int i = 0; i < tensor->data.size; i++) {
         grad.data[i] *= (a->tensor->data.data[i] > 0);

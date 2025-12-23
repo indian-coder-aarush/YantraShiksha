@@ -141,7 +141,7 @@ void storage::print() {
 
 // Element-wise addition
 template<typename Op>
-storage elementwise_op(storage &a, storage &b, Op op) {
+storage elementwise_op(const storage &a, const storage &b, Op op) {
     storage result(a.dimensions(), 0);
     std::vector<int> index(a.shape.size(), 0);
     int a_offset, b_offset, result_offset;
@@ -155,25 +155,25 @@ storage elementwise_op(storage &a, storage &b, Op op) {
 }
 
 
-storage operator+(storage &a, storage &b) {
+storage operator+(const storage &a, const storage &b) {
     return elementwise_op(a, b, [](double x, double y) { return x + y; });
 }
 
 
 // Element-wise subtraction
-storage operator-(storage &a, storage &b) {
+storage operator-(const storage &a, const storage &b) {
     return elementwise_op(a, b, [](double x, double y) { return x - y; });
 }
 
 
 // Element-wise multiplication
-storage operator*(storage &a, storage &b) {
+storage operator*(const storage &a, const storage &b) {
     return elementwise_op(a, b, [](double x, double y) { return x * y; });
 }
 
 
 // Element-wise division
-storage operator/(storage &a, storage &b) {
+storage operator/(const storage &a, const storage &b) {
     return elementwise_op(a, b, [](double x, double y) { return x / y; });
 }
 
@@ -222,7 +222,7 @@ storage sqrt(storage &a) {
 
 
 // Matrix multiplication
-storage s_matmul(storage &a, storage &b) {
+storage s_matmul(const storage &a, const storage &b) {
     storage result({a.shape[0], b.shape[1]}, 0);
     for (int i = 0; i < a.shape[0]; i++) {
         for (int j = 0; j < b.shape[1]; j++) {
@@ -238,7 +238,7 @@ storage s_matmul(storage &a, storage &b) {
 
 
 // Dot product (1D tensors)
-double dot(storage &a, storage &b) {
+double dot(const storage &a, const storage &b) {
     double result = 0;
     for (int i = 0; i < a.shape[0]; i++) {
         result += a.data[i] * b.data[i];
@@ -248,7 +248,7 @@ double dot(storage &a, storage &b) {
 
 
 // Element-wise sine using Taylor series
-storage s_sin(storage &a, int terms) {
+storage s_sin(const storage &a, int terms) {
     storage return_variable = a;
     double result = 0;
     double fact = 1;
@@ -271,7 +271,7 @@ storage s_sin(storage &a, int terms) {
 
 
 // Element-wise cosine using Taylor series
-storage s_cos(storage &a, int terms) {
+storage s_cos(const storage &a, int terms) {
     storage return_variable = a;
     double result = 0;
     float fact = 1;
@@ -361,7 +361,7 @@ void storage::setslice(std::vector<std::vector<int> > &slice, storage &other) {
 }
 
 
-storage convolution_s(storage &a, storage &b, int stride) {
+storage convolution_s(const storage &a, const storage &b, int stride) {
     std::vector<int> output_shape = {
         static_cast<int>((a.shape[0] - b.shape[0]) / stride) + 1,
         static_cast<int>((a.shape[1] - b.shape[1]) / stride) + 1
@@ -391,7 +391,7 @@ storage convolution_s(storage &a, storage &b, int stride) {
     return output;
 }
 
-storage max_pooling_s(storage &a, int window_size, int stride) {
+storage max_pooling_s(const storage &a, int window_size, int stride) {
     std::vector<int> output_shape = {
         static_cast<int>((a.shape[0] - window_size) / stride) + 1,
         static_cast<int>((a.shape[1] - window_size) / stride) + 1
@@ -420,7 +420,7 @@ storage max_pooling_s(storage &a, int window_size, int stride) {
     return output;
 }
 
-storage log_s(storage &a) {
+storage log_s(const storage &a) {
     storage result(a.shape, 0);
     double log_2 = 0.69314718056;
     result.stride = a.stride;
@@ -442,7 +442,7 @@ storage log_s(storage &a) {
     return result;
 }
 
-storage relu_s(storage &a) {
+storage relu_s(const storage &a) {
     storage result = a.copy();
     for (int i = 0; i < result.size; i++) {
         if (result.data[i] < 0) {
