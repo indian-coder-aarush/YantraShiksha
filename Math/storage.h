@@ -4,13 +4,6 @@
 #include <iostream>
 #include <vector>
 
-
-// Utility functions
-int offset(std::vector<int> &stride, std::vector<int> &index);
-
-bool increment(std::vector<int> &index, std::vector<int> &shape);
-
-
 // Main storage class
 class storage {
 private:

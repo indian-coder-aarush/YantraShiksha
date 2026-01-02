@@ -13,7 +13,7 @@ int offset(const std::vector<int> &stride, const std::vector<int> &index) {
 }
 
 
-bool increment(std::vector<int> &index, const std::vector<int> &shape) {
+static bool increment(std::vector<int> &index, const std::vector<int> &shape) {
     for (int i = index.size() - 1; i >= 0; --i) {
         if (index[i] + 1 < shape[i]) {
             index[i]++;

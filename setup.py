@@ -7,7 +7,8 @@ ext_modules = [
         ['Math/bindings.cpp','Math/storage.cpp','Math/Tensor.cpp','Math/Autograd.cpp'
          ],          # Source files
         include_dirs=[pybind11.get_include()],  # Include pybind11 headers
-        language='c++'
+        language='c++',
+        extra_compile_args=['-O3', '-std=c++17']
     ),
 ]
 
