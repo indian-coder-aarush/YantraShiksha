@@ -25,13 +25,13 @@ PYBIND11_MODULE(Math, m) {
             .def("zero_grad", &Tensor::zero_grad);
 
 
-    m.def("sin", &sin)
-            .def("cos", &cos)
-            .def("tan", &tan)
+    m.def("sin", &sin_T)
+            .def("cos", &cos_T)
+            .def("tan", &tan_T)
             .def("sec", &sec)
             .def("csc", &csc)
             .def("cot", &cot)
             .def("convolution", &convolution)
-            .def("log", &log)
+            .def("log", &log_T)
             .def("relu", &relu);
 }

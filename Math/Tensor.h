@@ -19,7 +19,7 @@ class Node;
 
 class Tensor {
 private:
-    void flatten(pybind11::list &list, double *a, int &index);
+    void flatten(const pybind11::list &list, double *a, int &index);
 
     void get_shape(pybind11::list &list, std::vector<int> &shape);
 
@@ -74,11 +74,11 @@ Tensor T(Tensor &a);
 Tensor convolution(Tensor &a, Tensor &b, int stride);
 
 // Trigonometric functions
-Tensor sin(Tensor &a);
+Tensor sin_T(Tensor &a);
 
-Tensor cos(Tensor &a);
+Tensor cos_T(Tensor &a);
 
-Tensor tan(Tensor &a);
+Tensor tan_T(Tensor &a);
 
 Tensor sec(Tensor &a);
 
@@ -86,7 +86,7 @@ Tensor csc(Tensor &a);
 
 Tensor cot(Tensor &a);
 
-Tensor log(Tensor &a);
+Tensor log_T(Tensor &a);
 
 Tensor relu(Tensor &a);
 

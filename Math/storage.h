@@ -28,7 +28,7 @@ public:
     storage(const storage &other); // Copy constructor
     storage &operator=(const storage &other); // Copy assignment
     ~storage(); // Destructor
-    storage copy();
+    storage copy() const;
 
 
     void set_stride(const std::vector<int> &shape);
@@ -36,13 +36,13 @@ public:
 
     std::vector<int> dimensions();
 
-    double access(const std::vector<int> &indices);
+    double access(std::vector<int> &indices);
 
     void change_value(const std::vector<int> &indices, double &value);
 
     void setslice(std::vector<std::vector<int> > &slice, storage &other);
 
-    storage slice(std::vector<std::vector<int> > &slice);
+    storage slice(const std::vector<std::vector<int> > &slice) const;
 
     void print();
 };
@@ -57,15 +57,15 @@ storage operator*(const storage &a, const storage &b);
 
 storage operator/(const storage &a, const storage &b);
 
-storage operator^(storage &a, double power);
+storage operator^(const storage &a, double power);
 
-storage relu_s(storage &a);
+storage relu_s(const storage &a);
 
 
 // Transpose
-storage T_s(storage &a);
+storage T_s(const storage &a);
 
-storage T_s(storage &a, std::vector<int> &order);
+storage T_s(const storage &a, std::vector<int> &order);
 
 
 // Other operations

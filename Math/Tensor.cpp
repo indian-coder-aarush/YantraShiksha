@@ -28,19 +28,22 @@ std::vector<std::vector<int> > slice_to_vector(py::tuple &slice, std::vector<int
     std::vector<std::vector<int> > slice_vector;
     for (int i = 0; i < slice.size(); i++) {
         if (py::isinstance<py::slice>(slice[i])) {
-            slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice[i]), a_shape[i]));
+            py::slice pyslice = py::cast<py::slice>(slice[i]);
+            slice_vector.push_back(slice_to_triplet(pyslice, a_shape[i]));
         } else {
-            slice_vector.push_back(int_to_triplet(py::cast<py::object>(slice[i]), a_shape[i]));
+            py::slice pyslice = py::cast<py::slice>(slice[i]);
+            slice_vector.push_back(int_to_triplet(pyslice, a_shape[i]));
         }
     }
     return slice_vector;
 }
 
 
-void Tensor::flatten(py::list &list, double *a, int &index) {
+void Tensor::flatten(const py::list &list, double *a, int &index) {
     for (auto i: list) {
         if (py::isinstance<py::list>(i)) {
-            flatten(i.cast<py::list>(), a, index);
+            py::list element = i.cast<py::list>();
+            flatten(element, a, index);
         } else {
             a[index] = i.cast<double>();
             index++;
@@ -51,7 +54,8 @@ void Tensor::flatten(py::list &list, double *a, int &index) {
 void Tensor::get_shape(py::list &list, std::vector<int> &shape) {
     if (py::isinstance<py::list>(list[0])) {
         shape.push_back(list.size());
-        get_shape(list[0].cast<py::list>(), shape);
+        py::list pylist_element = list[0].cast<py::list>();
+        get_shape(pylist_element, shape);
     } else {
         shape.push_back(list.size());
     }
@@ -133,15 +137,17 @@ Tensor::Tensor(py::array_t<double> &array) : Tensor_Node(std::make_shared<Node>(
 Tensor Tensor::access(py::object &slice) {
     std::vector<std::vector<int> > slice_vector;
     if (py::isinstance<py::slice>(slice)) {
-        slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice), data.shape[0]));
+        py::slice py_slice = py::cast<py::slice>(slice);
+        slice_vector.push_back(slice_to_triplet(py_slice, data.shape[0]));
     } else if (py::isinstance<py::tuple>(slice)) {
-        slice_vector = slice_to_vector(py::cast<py::tuple>(slice), data.shape);
+        py::tuple py_tuple = py::cast<py::tuple>(slice);
+        slice_vector = slice_to_vector(py_tuple, data.shape);
     } else {
         slice_vector.push_back(int_to_triplet(slice, data.shape[0]));
     }
 
-
-    Tensor return_tensor(data.slice(slice_vector));
+    storage sliced_data = data.slice(slice_vector);
+    Tensor return_tensor(sliced_data);
     std::shared_ptr<GetItemNode> c_Node = std::make_shared<GetItemNode>();
     c_Node->tensor = std::make_shared<Tensor>(return_tensor);
     c_Node->a = Tensor_Node;
@@ -154,9 +160,11 @@ Tensor Tensor::access(py::object &slice) {
 void change_value(Tensor &a, py::object &slice, Tensor &replace) {
     std::vector<std::vector<int> > slice_vector;
     if (py::isinstance<py::slice>(slice)) {
-        slice_vector.push_back(slice_to_triplet(py::cast<py::slice>(slice), a.data.shape[0]));
+        py::slice triplet = py::cast<py::slice>(slice);
+        slice_vector.push_back(slice_to_triplet(triplet, a.data.shape[0]));
     } else if (py::isinstance<py::tuple>(slice)) {
-        slice_vector = slice_to_vector(py::cast<py::tuple>(slice), a.data.shape);
+        py::tuple py_vector = py::cast<py::tuple>(slice);
+        slice_vector = slice_to_vector(py_vector, a.data.shape);
     } else {
         slice_vector.push_back(int_to_triplet(slice, a.data.shape[0]));
     }
@@ -228,8 +236,8 @@ Tensor mul(Tensor &a, Tensor &b) {
 }
 
 
-Tensor sin(Tensor &a) {
-    Tensor c(a.data.shape, 0);
+Tensor sin_T(Tensor &a) {
+    Tensor c( a.data.shape, 0);
     c.data = s_sin(a.data, 10);
     std::shared_ptr<SinNode> c_Node = std::make_shared<SinNode>();
     c_Node->tensor = std::make_shared<Tensor>(c);
@@ -239,7 +247,7 @@ Tensor sin(Tensor &a) {
 }
 
 
-Tensor cos(Tensor &a) {
+Tensor cos_T(Tensor &a) {
     Tensor c(a.data.shape, 0);
     c.data = s_cos(a.data, 10);
     std::shared_ptr<CosNode> c_Node = std::make_shared<CosNode>();
@@ -252,26 +260,32 @@ Tensor cos(Tensor &a) {
 
 Tensor sec(Tensor &a) {
     Tensor b(a.data.shape, 1);
-    Tensor c = division(b, cos(a));
+    Tensor cos_a = cos_T(a);
+    Tensor c = division(b, cos_a);
     return c;
 }
 
 
 Tensor csc(Tensor &a) {
     Tensor b(a.data.shape, 1);
-    Tensor c = division(b, sin(a)).data;
+    Tensor sin_a = sin_T(a);
+    Tensor c = division(b, sin_a);
     return c;
 }
 
 
-Tensor tan(Tensor &a) {
-    Tensor c = division(sin(a), cos(a));
+Tensor tan_T(Tensor &a) {
+    Tensor sin_a = sin_T(a);
+    Tensor cos_a = cos_T(a);
+    Tensor c = division(sin_a, cos_a);
     return c;
 }
 
 
 Tensor cot(Tensor &a) {
-    Tensor c = division(cos(a), sin(a));
+    Tensor sin_a = sin_T(a);
+    Tensor cos_a = cos_T(a);
+    Tensor c = division(cos_a, sin_a);
     return c;
 }
 
@@ -312,7 +326,8 @@ Tensor T(Tensor &a) {
 
 
 Tensor convolution(Tensor &a, Tensor &b, int stride) {
-    Tensor c(convolution_s(a.data, b.data, stride));
+    storage convolution_storage = convolution_s(a.data, b.data, stride);
+    Tensor c(convolution_storage);
     std::shared_ptr<ConvolutionNode> c_node = std::make_shared<ConvolutionNode>();
     c_node->a = a.Tensor_Node;
     c_node->b = b.Tensor_Node;
@@ -323,8 +338,9 @@ Tensor convolution(Tensor &a, Tensor &b, int stride) {
     return c;
 }
 
-Tensor log(Tensor &a) {
-    Tensor result(log_s(a.data));
+Tensor log_T(Tensor &a) {
+    storage log_storage = log_s(a.data);
+    Tensor result(log_storage);
     std::shared_ptr<LogNode> result_node = std::make_shared<LogNode>();
     result_node->a = a.Tensor_Node;
     std::shared_ptr<Tensor> tensor_result = std::make_shared<Tensor>(result);
@@ -334,7 +350,8 @@ Tensor log(Tensor &a) {
 }
 
 Tensor relu(Tensor &a) {
-    Tensor result(relu_s(a.data));
+    storage relu_storage = relu_s(a.data);
+    Tensor result(relu_storage);
     std::shared_ptr<ReluNode> result_node = std::make_shared<ReluNode>();
     result_node->a = a.Tensor_Node;
     std::shared_ptr<Tensor> tensor_result = std::make_shared<Tensor>(result);

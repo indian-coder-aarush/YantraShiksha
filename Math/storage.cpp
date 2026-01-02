@@ -4,7 +4,7 @@
 #include"storage.h"
 
 
-int offset(std::vector<int> &stride, std::vector<int> &index) {
+int offset(const std::vector<int> &stride, const std::vector<int> &index) {
     int offset_index = 0;
     for (int i = 0; i < stride.size(); i++) {
         offset_index += stride[i] * index[i];
@@ -13,7 +13,7 @@ int offset(std::vector<int> &stride, std::vector<int> &index) {
 }
 
 
-bool increment(std::vector<int> &index, std::vector<int> &shape) {
+bool increment(std::vector<int> &index, const std::vector<int> &shape) {
     for (int i = index.size() - 1; i >= 0; --i) {
         if (index[i] + 1 < shape[i]) {
             index[i]++;
@@ -97,7 +97,7 @@ storage::~storage() {
 }
 
 
-storage storage::copy() {
+storage storage::copy() const {
     storage copy;
     copy.data = new double[size];
     copy.shape = shape;
@@ -115,7 +115,7 @@ std::vector<int> storage::dimensions() {
 }
 
 
-double storage::access(const std::vector<int> &indices) {
+double storage::access(std::vector<int> &indices) {
     int index = 0;
     for (int i = 0; i < indices.size(); i++) {
         index += stride[i] * indices[i];
@@ -142,15 +142,18 @@ void storage::print() {
 // Element-wise addition
 template<typename Op>
 storage elementwise_op(const storage &a, const storage &b, Op op) {
-    storage result(a.dimensions(), 0);
+    const std::vector<int> dimensions = a.shape;
+    storage result(dimensions, 0);
     std::vector<int> index(a.shape.size(), 0);
     int a_offset, b_offset, result_offset;
     do {
-        a_offset = offset(a.stride, index);
-        b_offset = offset(b.stride, index);
+        std::vector<int> a_stride = a.stride;
+        std::vector<int> b_stride = b.stride;
+        a_offset = offset(a_stride, index);
+        b_offset = offset(b_stride, index);
         result_offset = offset(result.stride, index);
         *(result.data + result_offset) = op(*(a.data + a_offset), *(b.data + b_offset));
-    } while (increment(index, a.shape));
+    } while (increment(index, dimensions));
     return result;
 }
 
@@ -178,7 +181,7 @@ storage operator/(const storage &a, const storage &b) {
 }
 
 
-storage T_s(storage &a) {
+storage T_s(const storage &a) {
     storage b(a);
     b.shape[0] = a.shape[1];
     b.shape[1] = a.shape[0];
@@ -188,7 +191,7 @@ storage T_s(storage &a) {
 }
 
 
-storage T_s(storage &a, std::vector<int> &order) {
+storage T_s(const storage &a, std::vector<int> &order) {
     std::vector<int> new_shape(a.shape.size(), 0);
     std::vector<int> new_strides(a.stride.size(), 0);
     for (int i = 0; i < a.shape.size(); i++) {
@@ -203,8 +206,8 @@ storage T_s(storage &a, std::vector<int> &order) {
 
 
 // Raise each element to a power
-storage operator ^(storage &a, double power) {
-    storage result(a.dimensions(), 0);
+storage operator ^(const storage &a, double power) {
+    storage result(a.shape, 0);
     for (int i = 0; i < a.size; i++) {
         result.data[i] = pow(a.data[i], power);
     }
@@ -212,8 +215,8 @@ storage operator ^(storage &a, double power) {
 }
 
 // Element-wise square root
-storage sqrt(storage &a) {
-    storage result(a.dimensions(), 0);
+storage sqrt(const storage &a) {
+    storage result(a.shape, 0);
     for (int i = 0; i < a.size; i++) {
         *(result.data + i) = pow(*(a.data + i), 0.5);
     }
@@ -255,7 +258,8 @@ storage s_sin(const storage &a, int terms) {
     int a_offset;
     std::vector<int> index(a.shape.size(), 0);
     do {
-        a_offset = offset(a.stride, index);
+        const std::vector<int> a_stride = a.stride;
+        a_offset = offset(a_stride, index);
         for (int j = 0; j < terms; j++) {
             fact = 1;
             for (int k = 1; k <= (2 * j + 1); k++) {
@@ -293,7 +297,7 @@ storage s_cos(const storage &a, int terms) {
 }
 
 
-storage storage::slice(std::vector<std::vector<int> > &slice) {
+storage storage::slice(const std::vector<std::vector<int>> &slice) const {
     std::vector<int> new_shape;
     std::vector<int> new_stride;
     int step;
@@ -355,8 +359,10 @@ void storage::setslice(std::vector<std::vector<int> > &slice, storage &other) {
     int offset_assign;
     std::vector<int> index(other.shape.size(), 0);
     do {
-        offset_assign = offset(new_stride, index);
-        data[offset_assign + index_offset] = other.access(index);
+        const std::vector<int> new_strides = new_stride;
+        offset_assign = offset(new_strides, index);
+        double storage_slice = other.access(index);
+        data[offset_assign + index_offset] = storage_slice;
     } while (increment(index, other.shape));
 }
 
@@ -401,14 +407,17 @@ storage max_pooling_s(const storage &a, int window_size, int stride) {
     int start_i = 0;
     int start_j = 0;
     std::vector<std::vector<int> > slice;
+    storage window;
+    int current_num;
     for (int i = 0; i < output.shape[0]; i++) {
         start_j = 0;
         for (int j = 0; j < output.shape[1]; j++) {
-            value_i_j = window.data[0];
             slice = {{start_i, start_i + window_size, 1}, {start_j, start_j + window_size, 1}};
-            for (int k = 0; k < slice.shape[0]; k++) {
-                for (int l = 0; l < slice.shape[1]; l++) {
-                    current_num = window.data[k * window.stride[0] + l]
+            window = a.slice(slice);
+            value_i_j = window.data[0];
+            for (int k = 0; k < window.shape[0]; k++) {
+                for (int l = 0; l < window.shape[1]; l++) {
+                    current_num = window.data[k * window.stride[0] + l];
                     value_i_j += (current_num >  value_i_j ? current_num : value_i_j);
                 }
             }
