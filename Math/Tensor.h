@@ -45,6 +45,7 @@ public:
     void zero_grad();
 
     Tensor grad();
+    std::vector<int> shape();
 
 
     // Access and mutation

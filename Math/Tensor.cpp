@@ -156,6 +156,9 @@ Tensor Tensor::access(py::object &slice) {
     return return_tensor;
 }
 
+std::vector<int> Tensor::shape(){
+    return data.shape;
+}
 
 void change_value(Tensor &a, py::object &slice, Tensor &replace) {
     std::vector<std::vector<int> > slice_vector;

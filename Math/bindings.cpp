@@ -15,6 +15,7 @@ PYBIND11_MODULE(Math, m) {
             .def("reshape", &reshape)
             .def("backward", py::overload_cast<>(&Tensor::backward))
             .def_property_readonly("grad", &Tensor::grad)
+            .def_property_readonly("shape", &Tensor::shape)
             .def("__add__", &add)
             .def("__sub__", &sub)
             .def("__truediv__", &division)

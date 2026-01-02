@@ -1,5 +1,5 @@
 import numpy as np
-import Tanitra
+import Math
 import math
 # ===== Dense Layer Base Class =====
 class Layer:
@@ -46,9 +46,9 @@ class Dense:
        if not self.input_output_learned:
            self.input_shape = input.shape
            self.params = {
-               "weights": Tanitra.Tanitra(np.random.randn(math.prod(self.input_shape), self.n_neurons) *
+               "weights": Math.Tensor(np.random.randn(math.prod(self.input_shape), self.n_neurons) *
                                           1 / np.sqrt(math.prod(self.input_shape))),
-               "biases": Tanitra.Tanitra(np.random.randn(self.n_neurons) * 0.01)
+               "biases": Math.Tensor(np.random.randn(self.n_neurons) * 0.01)
            }
            self.input_output_learned = True
 
@@ -57,7 +57,7 @@ class Dense:
 
 
        # Check input shape matches
-       if Tanitra.length(input) != math.prod(self.input_shape):
+       if input.shape[0] != math.prod(self.input_shape):
            raise RuntimeError("Invalid input shape for GuptaParata layer")
 
 
@@ -66,7 +66,7 @@ class Dense:
 class Relu(Layer):
 
     def forward(self,input):
-        return Tanitra.relu(input)
+        return Math.relu(input)
 
 
 # ===== Normalization Layer =====
@@ -125,17 +125,18 @@ class Conv2D:
                           (self.input_shape[1] + self.padding_width - self.kernel_size) // self.stride + 1,
                           (self.input_shape[2] + self.padding_width - self.kernel_size) // self.stride + 1)
            for i in range(self.filters):
-               self.params['kernels' + str(i)] = Tanitra.Tanitra(
+               self.params['kernels' + str(i)] = Math.Tensor(
                    np.random.randn(self.channels, self.kernel_size, self.kernel_size) /
                    (self.input_shape[1] * self.input_shape[2])
                )
            self.input_output_learned = True
 
-       output = Tanitra.Tanitra(np.zeros(*self.output))
+       output = Math.Tensor(np.zeros(*self.output))
        for i in range(self.filters):
-           feature_map = Tanitra.Tanitra(0)
+           feature_map = Math.Tensor(np.zeros((self.input_shape[1] + self.padding_width - self.kernel_size) // self.stride + 1,
+                                              (self.input_shape[2] + self.padding_width - self.kernel_size) // self.stride + 1, ))
            for j in range(self.channels):
-               feature_map += Tanitra.convolution2d(
+               feature_map += Math.convolution(
                    X[j], self.params['kernels' + str(i)][j],
                    self.stride, self.padding, self.padding_width, self.padding_constant)
            output[i] = feature_map
@@ -143,12 +144,10 @@ class Conv2D:
 
        # Apply activation
        if self.activation == 'relu':
-           output = Tanitra.relu(output)
-       elif self.activation == 'sigmoid':
-           output = Tanitra.sigmoid(output)
+           output = Math.relu(output)
        return output
 
-
+"""
 # ===== MaxPooling Layer =====
 class MaxPooling2D:
    def __init__(self, stride, pool_window, channels, padding_mode=None, pad_width=0, pad_constants=0, input_shape=None):
@@ -172,11 +171,10 @@ class MaxPooling2D:
            self.output = (self.channels,
                           (self.input_shape[1] + self.pad_width - self.pool_window) // self.stride + 1,
                           (self.input_shape[2] + self.pad_width - self.pool_window) // self.stride + 1)
-       output = Tanitra.Tanitra(np.zeros(*self.output))
+       output = Math.Tensor(np.zeros(*self.output))
        for j in range(self.channels):
-           output[j] = Tanitra.pooling2d(X[j], self.pool_window, self.stride, self.padding, self.pad_width, self.pad_constants)
+           output[j] = Math.pooling(X[j], self.pool_window, self.stride, self.padding, self.pad_width, self.pad_constants)
        return output
-
 
 # ===== LSTM Block =====
 class LSTM:
@@ -188,19 +186,19 @@ class LSTM:
 
 
    def forward(self, X):
-       if not isinstance(X, Tanitra.Tanitra):
-           X = Tanitra.Tanitra(X)
+       if not isinstance(X, Math.Tensor):
+           X = Math.Tensor(X)
        if not self.params_initialized:
            # Initializing all weights and biases for gates
            for gate in ['forget', 'input', 'input%', 'output']:
-               self.params[f'{gate}_gate_short_memory_weights'] = Tanitra.Tanitra(np.random.randn(len(X.data), len(X.data)))
-               self.params[f'{gate}_gate_input_weights'] = Tanitra.Tanitra(np.random.randn(len(X.data), len(X.data)))
-               self.params[f'{gate}_gate_biases'] = Tanitra.Tanitra(np.random.randn(len(X.data)))
+               self.params[f'{gate}_gate_short_memory_weights'] = Math.Tensor(np.random.randn(len(X.data), len(X.data)))
+               self.params[f'{gate}_gate_input_weights'] = Math.Tensor(np.random.randn(len(X.data), len(X.data)))
+               self.params[f'{gate}_gate_biases'] = Math.Tensor(np.random.randn(len(X.data)))
            self.params_initialized = True
 
 
-       self.long_term_memory = Tanitra.Tanitra(np.zeros_like(X.data))
-       self.short_term_memory = Tanitra.Tanitra(np.zeros_like(X.data))
+       self.long_term_memory = Math.Tensor(np.zeros_like(X.data))
+       self.short_term_memory = Math.Tensor(np.zeros_like(X.data))
 
 
        for i in range(len(X.data)):
@@ -234,23 +232,22 @@ class LSTM:
            percentage_short_term_remember = Tanitra.sigmoid(percentage_short_term_remember)
            self.short_term_memory = percentage_short_term_remember * self.long_term_memory
 
-
 # ===== Self-Attention Layer =====
 class SelfAttention:
    def __init__(self, embedding_dim, d_model):
        self.embedding_dim = embedding_dim
        self.d_model = d_model
        self.params = {
-           'Q': Tanitra.Tanitra(np.random.randn(embedding_dim, d_model) / (embedding_dim ** 0.5)),
-           'K': Tanitra.Tanitra(np.random.randn(embedding_dim, d_model) / (embedding_dim ** 0.5)),
-           'V_down': Tanitra.Tanitra(np.random.randn(embedding_dim, d_model) / (embedding_dim ** 0.5)),
-           'V_up': Tanitra.Tanitra(np.random.randn(d_model, embedding_dim) / (embedding_dim ** 0.5))
+           'Q': Math.Tensor(np.random.randn(embedding_dim, d_model) / (embedding_dim ** 0.5)),
+           'K': Math.Tensor(np.random.randn(embedding_dim, d_model) / (embedding_dim ** 0.5)),
+           'V_down': Math.Tensor(np.random.randn(embedding_dim, d_model) / (embedding_dim ** 0.5)),
+           'V_up': Math.Tensor(np.random.randn(d_model, embedding_dim) / (embedding_dim ** 0.5))
        }
 
 
    def forward(self, x):
-       if not isinstance(x, Tanitra.Tanitra):
-           x = Tanitra.Tanitra(x)
+       if not isinstance(x, Math.Tensor):
+           x = Math.Tensor(x)
        key = x @ self.params['K']
        query = x @ self.params['Q']
        attention = (query @ key.T()) / (self.d_model ** 0.5)
@@ -278,7 +275,7 @@ class MultiHeadedAttention:
            add += y - x
        x += add
        return x
-
+"""
 
 # ===== Positional Encoding =====
 class PositionalEncoding:
@@ -287,12 +284,12 @@ class PositionalEncoding:
 
 
    def forward(self, x):
-       if not isinstance(x, Tanitra.Tanitra):
-           x = Tanitra.Tanitra(x)
-       if Tanitra.length(x[0]) != self.embedding_dim:
+       if not isinstance(x, Math.Tensor):
+           x = Math.Tensor(x)
+       if x.shape[1] != self.embedding_dim:
            raise RuntimeError("Embedding dimension mismatch")
        positional_encoding = np.zeros_like(x.data, dtype=np.float64)
-       for i in range(Tanitra.length(x)):
+       for i in range(x.shape[0]):
            for j in range(self.embedding_dim):
                if j % 2 == 0:
                    positional_encoding[i][j] = np.sin(i / (10000 ** (2 * j / self.embedding_dim)))
