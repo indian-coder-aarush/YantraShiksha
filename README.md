@@ -1,4 +1,4 @@
-# YantraShiksha 🧠
+# YantraShiksha 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -8,19 +8,19 @@
 
 YantraShiksha provides a full stack for building, training, and experimenting with neural networks, including both core tensor operations and high-level model APIs. The library is implemented in Python with performance-critical components in C++ (via pybind11), and features a blend of Sanskrit-inspired naming and modern deep learning concepts.
 
-## ✨ Features
+##  Features
 
-- 🚀 **Autograd Engine**: Automatic differentiation for tensor operations, supporting gradients for all core mathematical operations and custom layers
-- 📊 **Tensor Library (`Tanitra`)**: Numpy-based tensor class with support for broadcasting, slicing, matrix multiplication, and a variety of activation and utility functions
-- 🏗️ **Layer API (`Layer`)**: Modular layer classes including dense, input, output, normalization, convolutional, pooling, LSTM, and transformer components
-- 🤖 **Model API (`Model`)**: Sequential and word embedding models, with easy-to-use training loops and support for custom optimizers
-- 🔄 **Transformer Support**: Self-attention, multi-headed attention, and positional encoding layers for building transformer architectures
-- 📚 **Educational Focus**: Clear, readable code with a focus on learning and experimentation
-- ⚡ **High-Performance C++ Backend**: Math tensor core for optimized operations
+- **Autograd Engine**: Automatic differentiation for tensor operations, supporting gradients for all core mathematical operations and custom layers
+- **Tensor Library (`Tanitra`)**: Numpy-based tensor class with support for broadcasting, slicing, matrix multiplication, and a variety of activation and utility functions
+- **Layer API (`Layer`)**: Modular layer classes including dense, input, output, normalization, convolutional, pooling, LSTM, and transformer components
+- **Model API (`Model`)**: Sequential and word embedding models, with easy-to-use training loops and support for custom optimizers
+- **Transformer Support**: Self-attention, multi-headed attention, and positional encoding layers for building transformer architectures
+- **Educational Focus**: Clear, readable code with a focus on learning and experimentation
+- **High-Performance C++ Backend**: Math tensor core for optimized operations
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Installation
 **Requirements:** Python 3.8+, numpy, matplotlib, pybind11 (only for building from source)
@@ -75,18 +75,18 @@ model.learn(X, y, epochs=100, lr=0.1)
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
 ### Core Components
 
-#### 🧮 Tensors & Autograd
+####  Tensors & Autograd
 
 - `Tanitra`: Core tensor class with autograd support
 - Supports: `+`, `-`, `*`, `/`, `@` (matmul), slicing, flatten, transpose, and more
 - Activation functions: `sigmoid`, `relu`, `tanh`, `softmax`, etc.
 - Utility functions: `mean`, `square`, `convolution2d`, `pooling2d`, etc.
 
-#### ⚡ Math: High-Performance C++ Tensor Core
+####  Math: High-Performance C++ Tensor Core
 
 The tensor operations are being migrated to a high-performance C++ implementation exposed via pybind11 bindings. This provides:
 
@@ -126,7 +126,7 @@ conv_result = Math.convolution(a, b, stride=1)
 
 > **Note**: The Math API is actively being developed and will have improved functionality and performance in future releases. More functions are coming soon
 
-#### 🏗️ Layers
+#### Layers
 
 - `Input`: Input layer
 - `Dense`: Dense (fully connected) layer with activations
@@ -136,14 +136,14 @@ conv_result = Math.convolution(a, b, stride=1)
 - `LSTM`: Long Short-Term Memory block
 - `SelfAttention`, `MultiHeadedAttention`, `PositionalEncoding`: Transformer components
 
-#### 🤖 Models
+####  Models
 
 - `Sequential`: Sequential model API
 - `Word2Vec`: Word embedding model (CBOW, skip-gram)
 
 ---
 
-## 🔧 Advanced Features
+## Advanced Features
 
 - **Custom Backpropagation**: Easily define new operations and their gradients
 - **Extensible Layers**: Add your own layers by subclassing `Layer`
@@ -152,15 +152,15 @@ conv_result = Math.convolution(a, b, stride=1)
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgements
+##  Acknowledgements
 
 - Inspired by PyTorch, TensorFlow, and the spirit of open-source learning
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
@@ -173,7 +173,3 @@ We welcome contributions! Please feel free to submit a Pull Request. For major c
 5. Open a Pull Request
 
 ---
-
-<div align="center">
-Made with ❤️ for the deep learning community
-</div>
