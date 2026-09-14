@@ -94,6 +94,7 @@ storage::storage(const std::vector<int> &dim, double default_value) : shape(dim)
 
 
 storage::~storage() {
+    delete[] data;
 }
 
 
@@ -116,20 +117,16 @@ std::vector<int> storage::dimensions() {
 
 
 double storage::access(std::vector<int> &indices) {
-    int index = 0;
-    for (int i = 0; i < indices.size(); i++) {
-        index += stride[i] * indices[i];
-    }
-    return *(data + index);
+    int offset_ = 0;
+    offset_ = offset(stride, indices);
+    return *(data + offset_);
 }
 
 
 void storage::change_value(const std::vector<int> &indices, double &value) {
-    int index = 0;
-    for (int i = 0; i < indices.size(); i++) {
-        index += stride[i] * indices[i];
-    }
-    *(data + index) = value;
+    int offset_ = 0;
+    offset_ = offset(stride, indices);
+    *(data + offset_) = value;
 }
 
 
@@ -139,7 +136,7 @@ void storage::print() {
 }
 
 
-// Element-wise addition
+// Defining the template for element wise operations
 template<typename Op>
 storage elementwise_op(const storage &a, const storage &b, Op op) {
     const std::vector<int> dimensions = a.shape;
@@ -157,7 +154,7 @@ storage elementwise_op(const storage &a, const storage &b, Op op) {
     return result;
 }
 
-
+// Element wise addition operation
 storage operator+(const storage &a, const storage &b) {
     return elementwise_op(a, b, [](double x, double y) { return x + y; });
 }
@@ -180,7 +177,7 @@ storage operator/(const storage &a, const storage &b) {
     return elementwise_op(a, b, [](double x, double y) { return x / y; });
 }
 
-
+// Transposing by reversing the shape and strides.
 storage T_s(const storage &a) {
     storage b(a);
     int dim = a.shape.size();
@@ -248,8 +245,8 @@ storage s_matmul(const storage &a, const storage &b) {
 // Dot product (1D tensors)
 double dot(const storage &a, const storage &b) {
     double result = 0;
-    for (int i = 0; i < a.shape[0]; i++) {
-        result += a.data[i] * b.data[i];
+    for (int i = 0; i < a.size; i++) {
+        result += (*(a.data+i)) * (*(b.data+i));
     }
     return result;
 }
@@ -261,16 +258,19 @@ storage s_sin(const storage &a, int terms) {
     double result = 0;
     double fact = 1;
     int a_offset;
+    int pi = 3.14159;
+    double a_val;
     std::vector<int> index(a.shape.size(), 0);
     do {
         const std::vector<int> a_stride = a.stride;
         a_offset = offset(a_stride, index);
+        a_val = (*(a.data + a_offset)) % (2*pi);
         for (int j = 0; j < terms; j++) {
             fact = 1;
             for (int k = 1; k <= (2 * j + 1); k++) {
                 fact *= k;
             }
-            result += (pow((0 - 1), j) * pow((*(a.data + a_offset)), (2 * j + 1))) / fact;
+            result += (pow((0 - 1), j) * pow(a_val), (2 * j + 1))) / fact;
         }
         *(return_variable.data + a_offset) = result;
         result = 0;
@@ -285,15 +285,18 @@ storage s_cos(const storage &a, int terms) {
     double result = 0;
     float fact = 1;
     int a_offset;
+    int pi = 3.14159;
+    double a_val;
     std::vector<int> index(a.shape.size(), 0);
     do {
         a_offset = offset(a.stride, index);
+        a_val = (*(a.data + a_offset)) % (2*pi);
         for (int j = 0; j < terms; j++) {
             fact = 1;
             for (int k = 1; k <= (2 * j); k++) {
                 fact *= k;
             }
-            result += (pow((0 - 1), j) * pow((*(a.data + a_offset)), (2 * j))) / fact;
+            result += (pow((0 - 1), j) * pow(a_val), (2 * j))) / fact;
         }
         *(return_variable.data + a_offset) = result;
         result = 0;

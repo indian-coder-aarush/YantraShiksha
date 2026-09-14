@@ -53,7 +53,7 @@ python setup.py build_ext --inplace
 
 ```python
 import Tanitra
-from DeepLeaning import Layer, Model
+from DeepLearning import Layer, Model
 
 # Build a simple feedforward network
 model = Model.Sequential([
