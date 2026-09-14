@@ -183,10 +183,15 @@ storage operator/(const storage &a, const storage &b) {
 
 storage T_s(const storage &a) {
     storage b(a);
-    b.shape[0] = a.shape[1];
-    b.shape[1] = a.shape[0];
-    b.stride[0] = a.stride[1];
-    b.stride[1] = a.stride[0];
+    int dim = a.shape.size();
+    std::vector<int> shape_b(dim);
+    std::vector<int> stride_b(dim);
+    for(int i = dim - 1; i >= 0; i--){
+        shape_b[dim - i - 1] = a.shape[i];
+        stride_b[dim - 1 - i] = a.stride[i];
+    }
+    b.shape = shape_b;
+    b.stride = stride_b;
     return b;
 }
 
@@ -418,7 +423,7 @@ storage max_pooling_s(const storage &a, int window_size, int stride) {
             for (int k = 0; k < window.shape[0]; k++) {
                 for (int l = 0; l < window.shape[1]; l++) {
                     current_num = window.data[k * window.stride[0] + l];
-                    value_i_j += (current_num >  value_i_j ? current_num : value_i_j);
+                    value_i_j = (current_num >  value_i_j ? current_num : value_i_j);
                 }
             }
             output.data[i * output.stride[0] + j] = value_i_j;
