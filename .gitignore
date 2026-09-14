@@ -5,3 +5,4 @@ build/
 trial.py
 CMakeLists.txt
 .cmake-build-debug/
+.venv
